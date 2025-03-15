@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebContextManager">
+    <option name="state">
+      <map>
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/SubjectManagement/listsubject.jsp" value="file://$PROJECT_DIR$/src/main/webapp/SubjectManagement" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/Admin/UserManagement/listuser.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/Admin/UserManagement" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/Admin/UserManagement/userList.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/Admin/UserManagement" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/Class/classList.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/Class" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/Class/listclass.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/Class" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/Web/classDetails.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/Web" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/index.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/listsubject.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/register.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
+      </map>
+    </option>
+  </component>
+</project>
