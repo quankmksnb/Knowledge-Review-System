@@ -200,6 +200,11 @@
             color: white;
         }
 
+        .form-control[readonly] {
+            background-color: transparent !important; /* Xóa màu nền */
+        }
+
+
         .student-img {
             width: 100px;
             height: 100px;
@@ -353,8 +358,7 @@
 </div>
 
 <!-- Add Student Modal -->
-<div class="modal fade" id="newStudentModal" tabindex="-1" aria-labelledby="newStudentModalLabel"
-     aria-hidden="true">
+<div class="modal fade" id="newStudentModal" tabindex="-1" aria-labelledby="newStudentModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -367,9 +371,21 @@
                     <input type="hidden" name="action" value="addStudent">
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control popup" id="email" name="email" required onblur="validateEmail()">
-                        <span id="emailError" class="text-danger" style="display: none; font-size: 14px;"></span>
+                        <input type="email" class="form-control popup" id="email" name="email" required oninput="validateEmail()">
+                        <small id="emailError" class="text-danger" style="display: none;"></small>
                     </div>
+
+                    <!-- Display username and fullname fields based on email validation -->
+                    <div class="mb-3" id="fullnameField" style="display: none;">
+                        <label for="fullname" class="form-label">Fullname</label>
+                        <input type="text" class="form-control popup" id="fullname" name="fullname" required readonly>
+                    </div>
+                    <div class="mb-3" id="usernameField" style="display: none;">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control popup" id="username" name="username" required readonly oninput="validateUsername()">
+                        <small id="usernameError" class="text-danger" style="display: none;"></small>
+                    </div>
+
                     <button type="submit" class="btn btn-primary w-100 py-2 rounded-3 shadow-sm mt-3" id="addStudentBtn" disabled>
                         Add
                     </button>
@@ -478,6 +494,8 @@
         let email = document.getElementById("email").value;
         let errorSpan = document.getElementById("emailError");
         let addButton = document.getElementById("addStudentBtn");
+        let usernameField = document.getElementById("usernameField");
+        let fullnameField = document.getElementById("fullnameField");
 
         if (!email.trim()) {
             errorSpan.style.display = "none";
@@ -491,46 +509,90 @@
             data: { email: email },
             success: function (response) {
                 if (response.includes("Email already exists!")) {
-                    // Nếu email tồn tại, kiểm tra xem đã ở trong lớp chưa
+                    // Email found, check class status
                     $.ajax({
                         url: "/class_student_check",
                         type: "GET",
                         data: { email: email, classId: "${oldClassId}" },
-                        success: function (res) {
-                            if (res.exists) {
-                                if (res.approved) {
+                        success: function (response) {
+                            if (response.exists) {
+                                if (response.approved) {
                                     errorSpan.innerText = "Student is already Approved in this class!";
                                     errorSpan.style.display = "block";
+                                    errorSpan.classList.remove("text-success");
+                                    errorSpan.classList.add("text-danger");
                                     addButton.disabled = true;
                                 } else {
                                     errorSpan.innerText = "Student is in class but not Approved yet!";
                                     errorSpan.style.display = "block";
+                                    errorSpan.classList.remove("text-success");
+                                    errorSpan.classList.add("text-danger");
                                     addButton.disabled = false;
                                 }
                             } else {
+                                // Set username and fullname from DB and make fields readonly
+                                document.getElementById("username").value = response.username1;  // Set username from DB
+                                document.getElementById("fullname").value = response.fullname;  // Set fullname from DB
+                                document.getElementById("username").readOnly = true;  // Make username readonly
+                                document.getElementById("fullname").readOnly = true;  // Make fullname readonly
+
+                                usernameField.style.display = "block";
+                                fullnameField.style.display = "block";
+
                                 errorSpan.style.display = "none";
                                 addButton.disabled = false;
                             }
-                        },
-                        error: function () {
-                            errorSpan.innerText = "Error checking student status!";
-                            errorSpan.style.display = "block";
-                            addButton.disabled = true;
                         }
                     });
                 } else {
-                    errorSpan.innerText = "Email does not exist in the system!";
+                    errorSpan.innerText = "Email will be created in the system";
                     errorSpan.style.display = "block";
-                    addButton.disabled = true;
+                    errorSpan.classList.remove("text-danger"); // Xóa lớp màu đỏ cũ nếu có
+                    errorSpan.classList.add("text-success");   // Thêm lớp màu xanh
+                    addButton.disabled = false;
+
+                    usernameField.style.display = "block";
+                    fullnameField.style.display = "block";
+                    document.getElementById("username").value = "";
+                    document.getElementById("fullname").value = "";
+                    document.getElementById("username").readOnly = false;
+                    document.getElementById("fullname").readOnly = false;
                 }
-            },
-            error: function () {
-                errorSpan.innerText = "Error connecting to server!";
-                errorSpan.style.display = "block";
-                addButton.disabled = true;
             }
         });
     }
+
+    function validateUsername() {
+        let username = document.getElementById("username").value;
+        let errorSpan = document.getElementById("usernameError");
+        let addButton = document.getElementById("addStudentBtn");
+
+        if (!username.trim()) {
+            errorSpan.style.display = "none";
+            addButton.disabled = true;
+            return;
+        }
+
+        // Gửi AJAX request để kiểm tra username có tồn tại không
+        $.ajax({
+            url: "/user/checkUserExists",
+            type: "GET",
+            data: { username: username },
+            success: function(response) {
+                if (response.includes("Username already exists!")) {
+                    // Nếu username đã tồn tại, hiển thị lỗi
+                    errorSpan.innerText = "Username already exists!";
+                    errorSpan.style.display = "block";
+                    addButton.disabled = true; // Disable add button
+                } else {
+                    // Nếu username chưa tồn tại, ẩn lỗi và enable button
+                    errorSpan.style.display = "none";
+                    addButton.disabled = false;
+                }
+            }
+        });
+    }
+
 
 
 

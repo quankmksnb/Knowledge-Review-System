@@ -31,8 +31,8 @@ public class ConfigController extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         String action = request.getParameter("action");
         if (action == null) {
-            DTOConfig dtoConfig = configDAO.findConfigBySubjectId(subject.getId());
-            request.setAttribute("dtoConfig", dtoConfig);
+            List<DTOConfig> list = configDAO.findConfigBySubjectId(subject.getId());
+            request.setAttribute("dtoConfigList", list);
             request.setAttribute("settingTypes", settingDAO.findAllByType(SettingType.Config));
             request.getRequestDispatcher("WEB-INF/SubjectManagement/configsubject.jsp").forward(request, response);
         }
@@ -45,12 +45,37 @@ public class ConfigController extends HttpServlet {
             response.sendRedirect("config?status=success");
         }
         if (action != null && action.equals("update")) {
+            if (request.getParameter("submit") == null) {
+                int id = Integer.parseInt(request.getParameter("id"));
+                Config config = configDAO.findById(id);
+                request.setAttribute("config", config);
+                request.setAttribute("settingTypes", settingDAO.findAllByType(SettingType.Config));
+                request.getRequestDispatcher("WEB-INF/SubjectManagement/updateconfig.jsp").forward(request, response);
+            }
+            else {
+                int id = Integer.parseInt(request.getParameter("id"));
+                int typeId = Integer.parseInt(request.getParameter("typeId"));
+                String description = request.getParameter("description");
+                String status = request.getParameter("status");
+                Config config = new Config(id, 0, typeId, description);
+                config.setStatus(status);
+                configDAO.update(config);
+                response.sendRedirect("config?status=success");
+            }
+
+        }
+        if (action != null && action.equals("changeStatus")) {
             int id = Integer.parseInt(request.getParameter("id"));
-            int typeId = Integer.parseInt(request.getParameter("typeId"));
-            String description = request.getParameter("description");
-            Config config = new Config(id, 0, typeId, description);
-            configDAO.update(config);
-            response.sendRedirect("config?status=success");
+            String status = request.getParameter("status");
+            if (status != null) {
+                if (status.equals("Active")) {
+                    configDAO.changeStatus(id, "Inactive");
+                }
+                else {
+                    configDAO.changeStatus(id, "Active");
+                }
+            }
+            response.sendRedirect("config?status=success");;
         }
 
 

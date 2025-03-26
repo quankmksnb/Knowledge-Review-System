@@ -29,7 +29,7 @@ public class SubjectDAO extends DatabaseConnector implements DAO<Subject> {
     }
 
     @Override
-    public void create(Subject subject) {
+    public int create(Subject subject) {
         String sql = "INSERT INTO subject ( category_id, domain_id, name, code, description, modified_at, status, created_by) VALUES (?, ?, ?, ?, ?, Now(), ?, ?)";
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -56,23 +56,13 @@ public class SubjectDAO extends DatabaseConnector implements DAO<Subject> {
                             "VALUES (%d, %d, '%s', '%s', '%s', Now(), '%s', %d);",
                     categoryId, domainId, subjectName, code, description, status, createdBy
             );
-//
-//            preparedStatement.setInt(1, subject.getCategoryId());
-//            preparedStatement.setInt(2, subject.getDomainId());
-//            preparedStatement.setString(3, subject.getSubjectName());
-//            preparedStatement.setString(4, subject.getCode());
-//            preparedStatement.setString(5, subject.getDescription());
-//            preparedStatement.setString(6, subject.isStatus() ? "Active" : "Inactive");
-//            preparedStatement.setInt(7, 1);
-
-//            System.out.println(subject.getCategoryId() + " " + subject.getDomainId());
-
 
             int n = preparedStatement.executeUpdate();
             //System.out.println(formattedSQL);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        return 0;
     }
 
     public void changeStatus(Subject subject) {
@@ -343,6 +333,31 @@ public class SubjectDAO extends DatabaseConnector implements DAO<Subject> {
         }
         return subjectList;
     }
+
+    public List<Subject> getSubjectsByUserId(int userId) {
+        List<Subject> subjects = new ArrayList<>();
+        String sql = "SELECT s.* FROM subject s " +
+                "JOIN class c ON s.id = c.subject_id " +
+                "WHERE c.manager_id = ?"; // Giả sử có bảng `class` chứa thông tin người dùng tham gia môn học.
+
+        try (Connection conn = DatabaseConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Subject subject = new Subject();
+                subject.setId(rs.getInt("id"));
+                subject.setSubjectName(rs.getString("name"));
+                subject.setDescription(rs.getString("description"));
+                subjects.add(subject);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return subjects;
+    }
+
 
 
 //    public static void main(String[] args) {

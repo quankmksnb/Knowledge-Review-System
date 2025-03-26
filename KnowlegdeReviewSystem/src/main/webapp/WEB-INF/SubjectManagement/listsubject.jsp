@@ -111,7 +111,7 @@
 
         .popup {
             background-color: #3e4a67;
-            color: white;
+            color: whitesmoke;
             border: 1px solid #4d5b75;
             border-radius: 8px;
             padding: 0.8rem;
@@ -120,7 +120,7 @@
         .popup:focus {
             background-color: #4a5b72;
             border-color: #007bff;
-            color: white;
+            color: whitesmoke;
         }
         .toast-container {
             position: fixed;
@@ -142,6 +142,7 @@
             background-color: #dc3545;
             color: white;
         }
+
     </style>
 </head>
 <body>
@@ -153,9 +154,11 @@
                 <h5 class="text-white mb-4">AdminKit</h5>
                 <nav class="nav flex-column">
                     <a class="nav-link" href="/home"><i class="bi bi-house"></i> Home</a>
-                    <a class="nav-link" href="/user"><i class="bi bi-people me-2"></i> User</a>
+                    <a class="nav-link" href="/user"><i class="bi bi-person-circle"></i> User</a>
                     <a class="nav-link" href="/subject"><i class="bi bi-book"></i> Subject</a>
+                    <a class="nav-link" href="/class_management"><i class="bi bi-people"></i> Class</a>
                     <a class="nav-link" href="/setting"><i class="bi bi-gear"></i> Setting</a>
+                    <a class="nav-link" href="question?action=choose"><i class="bi bi-question-octagon"></i>Question</a>
                 </nav>
             </div>
         </div>
@@ -190,7 +193,7 @@
                 </div>
             </div>
             <div class="toast-container">
-                <div id="statusToast" class="toast custom-toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="1500">
+                <div id="statusToast" class="toast custom-toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="1500">
                     <div class="toast-header">
                         <i class="bi me-2" id="toastIcon"></i>
                         <strong class="me-auto" id="toastTitle"></strong>
@@ -272,23 +275,21 @@
                     <input type="hidden" name="action" value="create">
 
                     <div class="mb-3" style="display: flex; justify-content: space-between">
-                        <div>
+                        <div class="position-relative" style="width: 150px">
                             <label for="code" class="form-label">Code</label>
-                            <input type="text" class="form-control popup" id="code" name="code" style="width: 150px"
-                                   required>
+                            <input type="text" class="form-control popup" id="code" name="code" required>
+                            <!-- Error message will be inserted here -->
                         </div>
-                        <div>
+                        <div class="position-relative" style="width: 350px">
                             <label for="name" class="form-label">Name</label>
-                            <input type="text" class="form-control popup" id="name" name="name" style="width: 350px"
-                                   required>
+                            <input type="text" class="form-control popup" id="name" name="name" required>
+                            <!-- Error message will be inserted here -->
                         </div>
-
-
                     </div>
 
                     <div class="mb-3">
                         <label for="description" class="form-label">Description</label>
-                        <textarea class="form-control popup" id="description" name="description" rows="3"></textarea>
+                        <textarea class="form-control popup" id="description" name="description" rows="3" style="height: 150px"></textarea>
                     </div>
 
                     <div class="mb-3" style="display: flex; justify-content: space-between; margin-top: 30px;">
@@ -385,7 +386,111 @@
         bsToast.show();
     }
 
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get input elements
+        const codeInput = document.getElementById('code');
+        const nameInput = document.getElementById('name');
+        const submitButton = document.querySelector('button[type="submit"]');
 
+        // Validation function for code
+        function validateCode(code) {
+            // Regex for exactly 3 characters (uppercase letters and numbers)
+            const codeRegex = /^[A-Z0-9]{3}$/;
+            return codeRegex.test(code);
+        }
+
+        // Validation function for name
+        function validateName(name) {
+            // Regex for name (only letters, numbers, and spaces)
+            const nameRegex = /^[a-zA-Z0-9 ]+$/;
+            return nameRegex.test(name);
+        }
+
+        // Function to show validation error
+        function showError(input, message) {
+            // Remove any existing error states
+            input.classList.remove('is-valid');
+            input.classList.add('is-invalid');
+
+            // Find or create error message element
+            let errorElement = input.parentNode.querySelector('.invalid-feedback');
+            if (!errorElement) {
+                errorElement = document.createElement('div');
+                errorElement.classList.add('invalid-feedback');
+                input.parentNode.appendChild(errorElement);
+            }
+
+            // Set error message
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        // Function to show validation success
+        function showSuccess(input) {
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+
+            // Hide error message if exists
+            const errorElement = input.parentNode.querySelector('.invalid-feedback');
+            if (errorElement) {
+                errorElement.style.display = 'none';
+            }
+        }
+
+        // Add real-time validation for code input
+        codeInput.addEventListener('input', function() {
+            const code = this.value.trim().toUpperCase();
+
+            // Immediately update input to uppercase
+            this.value = code;
+
+            if (code.length === 0) {
+                showError(this, 'Code is required');
+            } else if (!validateCode(code)) {
+                showError(this, 'Code must be 3 characters (A-Z, 0-9)');
+            } else {
+                showSuccess(this);
+            }
+        });
+
+        // Add real-time validation for name input
+        nameInput.addEventListener('input', function() {
+            const name = this.value.trim();
+
+            if (name.length === 0) {
+                showError(this, 'Name is required');
+            } else if (!validateName(name)) {
+                showError(this, 'Name can only contain letters, numbers, and spaces');
+            } else {
+                showSuccess(this);
+            }
+        });
+
+        // Prevent form submission if validation fails
+        document.querySelector('form').addEventListener('submit', function(event) {
+            const code = codeInput.value.trim().toUpperCase();
+            const name = nameInput.value.trim();
+
+            let isValid = true;
+
+            // Validate code
+            if (!validateCode(code)) {
+                showError(codeInput, 'Code must be 3 characters (A-Z, 0-9)');
+                isValid = false;
+            }
+
+            // Validate name
+            if (!validateName(name)) {
+                showError(nameInput, 'Name can only contain letters, numbers, and spaces');
+                isValid = false;
+            }
+
+            // Prevent form submission if validation fails
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+    });
 </script>
 </body>
 </html>

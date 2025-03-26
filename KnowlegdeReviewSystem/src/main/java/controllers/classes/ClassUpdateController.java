@@ -61,13 +61,13 @@ public class ClassUpdateController extends HttpServlet {
         String classId = request.getParameter("classId");
         String code = request.getParameter("code");
         String subject = request.getParameter("subject");
-        String manager = request.getParameter("manager");
+        String teacher = request.getParameter("teacher");
         String status = request.getParameter("status");
 
         String className = subjectDAO.getSubjectCodeById(Integer.parseInt(subject)) + "_" + code;
 
         UserDAO userDAO = new UserDAO();
-        int managerId = userDAO.getIdByUsername(manager);
+        int teacherId = userDAO.getIdByUsername(teacher);
 
         // Convert status thành Enum
         ClassStatus classStatus = ClassStatus.valueOf(status);
@@ -78,7 +78,7 @@ public class ClassUpdateController extends HttpServlet {
         updatedClass.setClassName(className);
         updatedClass.setCode(code);
         updatedClass.setSubjectId(Integer.parseInt(subject));
-        updatedClass.setManagerId(managerId);
+        updatedClass.setManagerId(teacherId);
         updatedClass.setStatus(classStatus);
 
         ClassDAO classDAO = new ClassDAO();

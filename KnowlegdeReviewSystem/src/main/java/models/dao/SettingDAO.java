@@ -17,7 +17,7 @@ public class SettingDAO implements DAO<Setting> {
     Connection connection = getConnection();
 
     @Override
-    public void create(Setting setting) {
+    public int create(Setting setting) {
         String sql = "INSERT INTO setting (title, type, created_by, modified_by) VALUES (?, ?, ?, ?)";
         try (Connection conn = DatabaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -38,6 +38,7 @@ public class SettingDAO implements DAO<Setting> {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+        return 0;
     }
 
     @Override
@@ -234,8 +235,8 @@ public class SettingDAO implements DAO<Setting> {
 
         return role;
     }
-//    public static void main(String[] args) {
-//        SettingDAO settingDAO = new SettingDAO();
-//        System.out.println(settingDAO.findAllByType(SettingType.Semester));
-//    }
+    public static void main(String[] args) {
+        SettingDAO settingDAO = new SettingDAO();
+        System.out.println(settingDAO.findAllByType(SettingType.Semester));
+    }
 }

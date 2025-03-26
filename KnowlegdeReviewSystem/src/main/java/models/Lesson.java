@@ -8,6 +8,7 @@ public class Lesson {
     private Integer subjectId;
     private Integer createdBy;
     private String title;
+    private String videoUrl;
     private String description;
     private Date createdAt;
     private Date modifiedAt;
@@ -18,7 +19,7 @@ public class Lesson {
 
     }
 
-    public Lesson(int id, int subjectId, int createdBy, String title, String description, Date createdAt, Date modifiedAt, int modifiedBy) {
+    public Lesson(int id, int subjectId, int createdBy, String title, String videoUrl, String description, Date createdAt, Date modifiedAt, int modifiedBy) {
         this.id = id;
         this.subjectId = subjectId;
         this.createdBy = createdBy;
@@ -27,15 +28,20 @@ public class Lesson {
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
+        this.videoUrl = videoUrl;
     }
 
-    public Lesson(Integer id, Integer subjectId, Integer createdBy, String title, String description, Date createdAt, Date modifiedAt, Integer modifiedBy, List<Config> configs) {
-        this(id, subjectId, createdBy, title, description, createdAt, modifiedAt, modifiedBy);
+    public Lesson(Integer id, Integer subjectId, Integer createdBy, String title, String videoUrl, String description, Date createdAt, Date modifiedAt, Integer modifiedBy, List<Config> configs) {
+        this(id, subjectId, createdBy, title, videoUrl, description, createdAt, modifiedAt, modifiedBy);
         this.configs = configs;
     }
 
     public Integer getId() {
         return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Integer getSubjectId() {
@@ -104,7 +110,15 @@ public class Lesson {
     public void setConfigs(List<Config> configs) {
         this.configs = configs;
     }
-    
+
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
+    }
+
     @Override
     public String toString() {
         return "Lesson{" + "id=" + id + ", subjectId=" + subjectId + ", createdBy=" + createdBy + ", title=" + title + ", description=" + description + ", createdAt=" + createdAt + ", modifiedAt=" + modifiedAt + ", modifiedBy=" + modifiedBy + '}';

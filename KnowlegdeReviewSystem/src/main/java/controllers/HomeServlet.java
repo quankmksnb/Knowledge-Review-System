@@ -3,7 +3,6 @@ package controllers;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import jakarta.mail.Session;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -12,8 +11,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import models.*;
 import models.Class;
-import models.dao.LessonDAO;
-import models.dao.QuestionDAO;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -27,14 +24,15 @@ import java.util.logging.Logger;
         "/searchSubjects",
         "/admin",
         "/public-classes",
-        "/class-details",
         "/class-enroll",
         "/getMyClasses",
         "/getAllClasses",
         "/searchClasses",
         "/getClassDetailsEnroll",
         "/enrollClass",
-        "/classInfo"})
+        "/popular-classes",
+        "/classInfo",
+        "/my-class"})
 public class HomeServlet extends HttpServlet {
 
     Logger LOGGER = Logger.getLogger(HomeServlet.class.getName());
@@ -49,7 +47,7 @@ public class HomeServlet extends HttpServlet {
 
         switch (path) {
             case "/home":
-                request.getRequestDispatcher("WEB-INF/Web/index.jsp").forward(request, response);
+                request.getRequestDispatcher("WEB-INF/Web/home.jsp").forward(request, response);
                 break;
 
             case "/getSubjects":
@@ -66,9 +64,6 @@ public class HomeServlet extends HttpServlet {
             case "/public-classes":
                 request.getRequestDispatcher("WEB-INF/Web/publicClass.jsp").forward(request, response);
                 break;
-            case "/class-details":
-                request.getRequestDispatcher("WEB-INF/Web/classDetails.jsp").forward(request, response);
-                break;
             case "/class-enroll":
                 request.getRequestDispatcher("WEB-INF/Web/enroll.jsp").forward(request, response);
                 break;
@@ -81,11 +76,16 @@ public class HomeServlet extends HttpServlet {
             case "/getClassDetailsEnroll":
                 getClassDetailsEnroll(request, response);
                 break;
-            case "/classInfo":
-                getClass(request, response);
-                break;
             case "/getMyClasses":
                 getMyClass(request, response);
+                break;
+
+            case "/popular-classes":
+                getPopularClasses(request, response);
+                break;
+
+            case "/my-class":
+                request.getRequestDispatcher("WEB-INF/Web/index.jsp").forward(request, response);
                 break;
         }
     }
@@ -100,7 +100,7 @@ public class HomeServlet extends HttpServlet {
 
         switch (path) {
             case "/enrollClass":
-                enrolClass(request, response);
+                enrollClass(request, response);
                 break;
 
         }
@@ -139,7 +139,7 @@ public class HomeServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         // Fetch class data from database
-        List<Class> classes = WebManager.getInstance().getClassDAO().findAll();
+        List<Class> classes = WebManager.getInstance().getClassDAO().findAllPublicClasses();
 
         // Convert to JSON
         String json = new Gson().toJson(classes);
@@ -175,7 +175,7 @@ public class HomeServlet extends HttpServlet {
         List<Class> classes = new ArrayList<>();
 
         if(user == null){
-            classes = WebManager.getInstance().getClassDAO().findAll();
+            classes = WebManager.getInstance().getClassDAO().findAllPublicClasses();
         } else {
             LOGGER.warning(user.getId().toString());
             classes = WebManager.getInstance().getClassDAO().findClassesByStudentId(user.getId());
@@ -188,59 +188,6 @@ public class HomeServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         out.print(json);
         out.flush();
-    }
-
-    private void getClass(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
-        Gson gson = new Gson();
-        JsonObject jsonResponse = new JsonObject();
-        JsonArray lessonsArray = new JsonArray(); // JSON array to store lessons
-
-        int classId = Integer.parseInt(request.getParameter("class_id"));
-
-        Class _class = WebManager.getInstance().getClassDAO().findById(classId);
-
-        List<Lesson> lessons = WebManager.getInstance().getLessonDAO().findAllLessonsInSubject(_class.getSubjectId());
-
-        //String json = new Gson().toJson(lessons);
-
-        jsonResponse.addProperty("className", _class.getClassName());
-        jsonResponse.addProperty("classCode", _class.getCode());
-        jsonResponse.addProperty("subjectName", _class.getSubjectName());
-
-        // Convert lessons to JSON array
-        for (Lesson lesson : lessons) {
-            JsonObject lessonJson = new JsonObject();
-            lessonJson.addProperty("lessonId", lesson.getId());
-            lessonJson.addProperty("title", lesson.getTitle());
-            lessonJson.addProperty("description", lesson.getDescription());
-
-            JsonArray questionsArray = new JsonArray();
-
-            List<Question> questions = WebManager.getInstance().getQuestionDAO().findByLessonId(lesson.getId());
-
-            // Convert lessons to JSON array
-            for (Question question : questions) {
-                JsonObject questionJson = new JsonObject();
-                questionJson.addProperty("id", question.getId());
-                questionJson.addProperty("content", question.getContent());
-                questionsArray.add(questionJson);
-            }
-
-            lessonJson.add("questions", questionsArray);
-
-            lessonsArray.add(lessonJson);
-        }
-
-        jsonResponse.add("lessons", lessonsArray); // Add lessons array
-
-        LOGGER.info(gson.toJson(jsonResponse));
-
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(gson.toJson(jsonResponse));
     }
 
     private void getClassDetailsEnroll(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -287,7 +234,7 @@ public class HomeServlet extends HttpServlet {
         response.getWriter().write(gson.toJson(jsonResponse));
     }
 
-    private void enrolClass(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void enrollClass(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
@@ -324,4 +271,21 @@ public class HomeServlet extends HttpServlet {
         }
     }
 
+    private void getPopularClasses (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+
+            // Mock data (replace with actual database query)
+            List<Class> classes = WebManager.getInstance().getClassDAO().findAllPublicClasses();
+
+        List<Class> popularClasses = new ArrayList<>();
+        if (classes != null && !classes.isEmpty()) {
+            // Take the first 3 classes (or fewer if the list has less than 3)
+            int limit = Math.min(classes.size(), 3);
+            popularClasses = classes.subList(0, limit);
+        }
+
+            Gson gson = new Gson();
+            response.getWriter().write(gson.toJson(popularClasses));
+    }
 }

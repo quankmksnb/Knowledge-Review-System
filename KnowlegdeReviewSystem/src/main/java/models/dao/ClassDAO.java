@@ -1,14 +1,11 @@
 package models.dao;
 
-import jakarta.servlet.http.HttpServletRequest;
 import models.*;
 import models.Class;
 import models.ClassStatus;
 import models.ClassStudentStatus;
 import models.DAO;
 import services.DatabaseConnector;
-
-import javax.xml.crypto.Data;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -24,7 +21,7 @@ public class ClassDAO implements DAO<Class> {
     private static final Logger LOGGER = Logger.getLogger(UserDAO.class.getName());
 
     @Override
-    public void create(Class aClass) {
+    public int create(Class aClass) {
         PreparedStatement ps = null;
 
         try {
@@ -58,6 +55,7 @@ public class ClassDAO implements DAO<Class> {
                 LOGGER.log(Level.SEVERE, "Error while closing PreparedStatement", ex);
             }
         }
+        return 0;
     }
 
     @Override
@@ -179,6 +177,24 @@ public class ClassDAO implements DAO<Class> {
         return classList;
     }
 
+    public List<Class> findAllPublicClasses() {
+        List<Class> classList = new ArrayList<>();
+        String sql = "SELECT * FROM krsdb.class WHERE status = 'Public'";
+
+        try (Connection connection = DatabaseConnector.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                classList.add(extractClassFromResultSet(rs));
+            }
+
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, "Error fetching all classes", ex);
+        }
+        return classList;
+    }
+
     private Class extractClassFromResultSet(ResultSet rs) throws SQLException {
         Class aClass = new Class();
         aClass.setId(rs.getInt("id"));
@@ -218,6 +234,56 @@ public class ClassDAO implements DAO<Class> {
             LOGGER.log(Level.SEVERE, "Error finding classes by student ID", ex);
         }
         return classList;
+    }
+
+    // thực hiện sau khi tạo class mới thì add teacher được ủy quyền vào luôn class_student
+    public Class getClassByCriteria(String code, int subjectId, int managerId, int semesterId, String className) {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        Class aClass = null;
+
+        try {
+            // Câu truy vấn SQL để tìm lớp học theo các tiêu chí
+            String sql = "SELECT id, code, class_name, subject_id, manager_id, semester_id, created_at, status " +
+                    "FROM krsdb.class " +
+                    "WHERE code = ? AND subject_id = ? AND manager_id = ? AND semester_id = ? AND class_name = ?";
+
+            ps = connection.prepareStatement(sql);
+            ps.setString(1, code);
+            ps.setInt(2, subjectId);
+            ps.setInt(3, managerId);
+            ps.setInt(4, semesterId);
+            ps.setString(5, className);
+
+            rs = ps.executeQuery();
+
+            // Kiểm tra nếu có kết quả trả về
+            if (rs.next()) {
+                aClass = new Class();
+                aClass.setId(rs.getInt("id"));
+                aClass.setCode(rs.getString("code"));
+                aClass.setClassName(rs.getString("class_name"));
+                aClass.setSubjectId(rs.getInt("subject_id"));
+                aClass.setManagerId(rs.getInt("manager_id"));
+                aClass.setSemesterId(rs.getInt("semester_id"));
+                aClass.setCreatedAt(rs.getTimestamp("created_at"));
+                aClass.setStatus(ClassStatus.valueOf(rs.getString("status"))); // Giả sử có enum ClassStatus
+            }
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, "Error while getting class by criteria", ex);
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (SQLException ex) {
+                LOGGER.log(Level.SEVERE, "Error while closing resources", ex);
+            }
+        }
+        return aClass;
     }
 
     public boolean isStudentInClass(int studentId, int classId) {
@@ -397,7 +463,7 @@ public class ClassDAO implements DAO<Class> {
             String sql = "SELECT u.id AS user_id, u.full_name, u.email, u.avatar " +
                     "FROM class_student cs " +
                     "JOIN user u ON cs.user_id = u.id " +
-                    "WHERE cs.class_id = ? AND cs.status = 'Approved'";
+                    "WHERE cs.class_id = ? AND cs.status = 'Approved' and u.role_id = 3";
 
             ps = connection.prepareStatement(sql);
             ps.setInt(1, classId);
@@ -737,6 +803,122 @@ public class ClassDAO implements DAO<Class> {
     }
 
 
+    public ClassInfo getClassInfo(int classId) {
+        ClassInfo classInfo = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            // Fetch class details first
+            Class aClass = findById(classId);
+            if (aClass == null) {
+                LOGGER.log(Level.WARNING, "Class not found for ID: " + classId);
+                return null;
+            }
+            classInfo = new ClassInfo(aClass.getClassName());
+
+            // Query for chapters and lessons
+            String sql = "SELECT " +
+                    "    c.id AS chapter_id, " +
+                    "    c.description AS chapter_name, " +
+                    "    l.id AS lesson_id, " +
+                    "    l.title AS lesson_title, " +
+                    "    l.description AS lesson_description, " +
+                    "    l.video_url AS lesson_video_url " +
+                    "FROM " +
+                    "    `config` c " +
+                    "LEFT JOIN " +
+                    "    `lesson_config` lc ON c.id = lc.config_id " +
+                    "LEFT JOIN " +
+                    "    `lesson` l ON lc.lesson_id = l.id " +
+                    "WHERE " +
+                    "    c.subject_id = ? " +
+                    "    AND c.type_id = 13 " +
+                    "ORDER BY " +
+                    "    c.id, l.id";
+
+            ps = connection.prepareStatement(sql);
+            ps.setInt(1, aClass.getSubjectId());
+            rs = ps.executeQuery();
+
+            int currentChapterId = -1;
+            Chapter currentChapter = null;
+
+            while (rs.next()) {
+                int chapterId = rs.getInt("chapter_id");
+                String chapterName = rs.getString("chapter_name");
+
+                // Start a new chapter if the ID changes
+                if (chapterId != currentChapterId) {
+                    if (currentChapter != null) {
+                        classInfo.addChapter(currentChapter);
+                    }
+                    currentChapter = new Chapter(chapterId, chapterName);
+                    currentChapterId = chapterId;
+                }
+
+                // Add lesson if it exists (lesson_id is not null)
+                if (!rs.getString("lesson_id").isEmpty()) {
+                    Lesson lesson = new Lesson();
+                    lesson.setId(rs.getInt("lesson_id"));
+                    lesson.setTitle(rs.getString("lesson_title"));
+                    lesson.setDescription(rs.getString("lesson_description"));
+                    String videoUrl = rs.getString("lesson_video_url");
+                    lesson.setVideoUrl(videoUrl != null ? videoUrl : ""); // Assuming setVideoUrl exists
+
+                    currentChapter.addLesson(lesson);
+                }
+            }
+
+            // Add the last chapter if it exists
+            if (currentChapter != null) {
+                classInfo.addChapter(currentChapter);
+            }
+
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error fetching class info: " + e.getMessage(), e);
+            return null;
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+            } catch (SQLException e) {
+                LOGGER.log(Level.SEVERE, "Error closing resources: " + e.getMessage(), e);
+            }
+        }
+
+        return classInfo;
+    }
+
+    public List<Subject> getEnrolledSubjectsByUserId(int userId) {
+        List<Subject> enrolledSubjects = new ArrayList<>();
+
+        // Truy vấn lấy danh sách các class_id mà user đã enroll và có trạng thái Approved
+        String sql = "SELECT c.subject_id FROM class_student cs " +
+                "JOIN class c ON cs.class_id = c.id " +
+                "WHERE cs.user_id = ? AND cs.status = 'Approved'";
+
+        try (Connection connection = DatabaseConnector.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+
+            // Lấy tất cả subject_id từ kết quả
+            while (rs.next()) {
+                int subjectId = rs.getInt("subject_id");
+
+                // Dùng subject_id để lấy thông tin về subject
+                Subject subject = new SubjectDAO().findById(subjectId);
+                if (subject != null) {
+                    enrolledSubjects.add(subject);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return enrolledSubjects;
+    }
 
 //    public static void main(String[] args) {
 //        ClassDAO dao = new ClassDAO();

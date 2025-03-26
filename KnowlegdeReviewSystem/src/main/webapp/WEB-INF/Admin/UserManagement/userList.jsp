@@ -200,6 +200,7 @@
                     <a class="nav-link" href="/subject"><i class="bi bi-book"></i> Subject</a>
                     <a class="nav-link" href="/class_management"><i class="bi bi-people"></i> Class</a>
                     <a class="nav-link" href="/setting"><i class="bi bi-gear"></i> Setting</a>
+                    <a class="nav-link" href="question?action=choose"><i class="bi bi-question-octagon"></i>Question</a>
                 </nav>
             </div>
         </div>
@@ -261,14 +262,14 @@
 
                                     <div class="d-flex align-items-center gap-2">
                                         <label for="email" class="form-label me-auto">Email</label>
-                                        <span id="emailError" class="text-danger ms-2" style="display:none;"></span>
+                                        <small id="emailError" class="text-danger ms-2" style="display:none;"></small>
                                     </div>
                                     <div class="mb-3">
                                         <input type="email" class="form-control popup" id="email" name="email" required>
                                     </div>
                                     <div class="d-flex align-items-center gap-2">
                                         <label for="email" class="form-label me-auto">Username</label>
-                                        <span id="usernameError" class="text-danger ms-2" style="display:none;"></span>
+                                        <small id="usernameError" class="text-danger ms-2" style="display:none;"></small>
                                     </div>
                                     <div class="mb-3">
                                         <input type="text" class="form-control popup" id="username" name="username"

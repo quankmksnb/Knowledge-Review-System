@@ -149,6 +149,7 @@
                     <a class="nav-link" href="/subject"><i class="bi bi-book"></i> Subject</a>
                     <a class="nav-link" href="/class_management"><i class="bi bi-people"></i> Class</a>
                     <a class="nav-link" href="/setting"><i class="bi bi-gear"></i> Setting</a>
+                    <a class="nav-link" href="question?action=choose"><i class="bi bi-question-octagon"></i>Question</a>
                 </nav>
             </div>
         </div>
@@ -209,8 +210,8 @@
                                                 </select>
                                             </div>
                                             <div class="col-md-6">
-                                                <label class="form-label">Manager</label>
-                                                <input type="text" class="form-control" name="manager"
+                                                <label class="form-label">Teacher</label>
+                                                <input type="text" class="form-control" name="teacher"
                                                        value="${oldManager}" required>
                                             </div>
                                             <div class="col-md-6 mb-3">

@@ -21,6 +21,8 @@ public class Class {
     private String managerName;
     private String subjectName;
 
+
+
     public Class() {
     }
 

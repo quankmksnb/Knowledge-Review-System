@@ -3,184 +3,227 @@
 <%@ page import="models.Setting" %>
 <%@ page import="models.SettingType" %>
 <%@ page import="java.util.List" %>
-<%@ page import="models.User" %><%--
-  Created by IntelliJ IDEA.
-  User: kat1002
-  Date: 2/24/2025
-  Time: 8:38 AM
-  To change this template use File | Settings | File Templates.
---%>
+<%@ page import="models.User" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
     <title>Title</title>
-</head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
 
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f8f9fa;
-        background-image: url('../Images/background.jpg'); /* Path to your HD image */
-        background-size: cover; /* Ensures the image covers the entire background */
-        background-position: center center; /* Centers the image */
-        background-attachment: fixed; /* Keeps the background fixed when scrolling */
-        background-repeat: no-repeat; /* Prevents the image from repeating */
-    }
-
-    @media (min-width: 1200px) {
+    <style>
         body {
-            background-image: url('../Images/background.jpg'); /* High-res image for large screens */
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
         }
-    }
 
-    header {
-        background-color: white;
-        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-        padding: 10px 20px;
-    }
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            padding: 15px 30px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
 
-    .nav-container {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
 
-    .logo img {
-        height: 40px;
-    }
+        .logo img {
+            height: 50px;
+            transition: transform 0.3s ease;
+        }
 
-    .dropdown {
-        position: relative;
-        display: inline-block;
-        margin: 0 10px;
-    }
+        .logo img:hover {
+            transform: scale(1.1);
+        }
 
-    .dropbtn {
-        background-color: transparent;
-        border: none;
-        font-size: 16px;
-        cursor: pointer;
-        padding: 12px 20px;
-    }
+        .header-dropdown {
+            position: relative;
+            margin: 0 20px;
+        }
 
-    .dropdown-content {
-        display: none;
-        position: absolute;
-        background-color: white;
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-        min-width: 200px;
-        z-index: 1;
-    }
+        .header-dropbtn {
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
 
-    .dropdown:hover .dropdown-content {
-        display: block;
-    }
+        .header-dropbtn:hover {
+            color: #007bff;
+        }
 
-    .dropdown-content a {
-        color: black;
-        display: block;
-        text-decoration: none;
-        padding: 12px 16px;
-    }
+        .header-dropdown-content {
+            display: none;
+            position: absolute;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            min-width: 220px;
+            z-index: 1000;
+            overflow: hidden;
+        }
 
-    .dropdown-content a:hover {
-        background-color: #f8f9fa;
-    }
+        .header-dropdown:hover .header-dropdown-content {
+            display: block;
+        }
 
-    .search-box {
-        display: flex;
-        border: 2px solid #ccc;
-        border-radius: 25px;
-        overflow: hidden;
-    }
+        .header-dropdown-content a {
+            color: #333;
+            padding: 12px 20px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
 
-    .search-box input {
-        border: none;
-        padding: 10px 15px;
-        width: 250px;
-        font-size: 14px;
-        color: #333;
-    }
+        .header-dropdown-content a:hover {
+            background: #f8f9fa;
+            color: #007bff;
+        }
 
-    .search-box button {
-        border: none;
-        background-color: #007bff;
-        color: white;
-        padding: 10px 15px;
-        cursor: pointer;
-        font-size: 14px;
-        border-radius: 5px;
-    }
-    .search-box button:hover {
-        background-color: #0056b3;
-    }
+        .search-container {
+            position: relative;
+        }
 
-    .login-btn {
-        background-color: #007bff;
-        color: white;
-        padding: 8px 16px;
-        text-decoration: none;
-        border-radius: 5px;
-    }
-    .user-dropdown {
-        position: relative;
-        display: inline-block;
-    }
+        .search-box {
+            display: flex;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
 
-    .user-icon {
-        display: flex;
-        align-items: center;
-        cursor: pointer;
-        padding: 8px 12px;
-        border-radius: 4px;
-        transition: background-color 0.2s;
-    }
+        .search-box:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
 
-    .user-icon:hover {
-        background-color: #f8f9fa;
-    }
+        .search-box input {
+            border: none;
+            padding: 12px 20px;
+            width: 300px;
+            font-size: 15px;
+            color: #333;
+            outline: none;
+        }
 
-    .user-icon i {
-        font-size: 24px;
-        margin-right: 8px;
-        color: #666;
-    }
+        .search-box button {
+            border: none;
+            background: #007bff;
+            color: white;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
 
-    .user-dropdown-content {
-        display: none;
-        position: absolute;
-        right: 0;
-        background-color: white;
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-        min-width: 160px;
-        z-index: 1000;
-        border-radius: 4px;
-        overflow: hidden;
-    }
+        .search-box button:hover {
+            background: #0056b3;
+        }
 
-    .user-dropdown-content.show {
-        display: block;
-    }
+        #searchResults {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
 
-    .user-dropdown-content a {
-        color: #333;
-        padding: 12px 16px;
-        display: block;
-        text-decoration: none;
-        transition: background-color 0.2s;
-    }
+        .result-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid #eee;
+        }
 
-    .user-dropdown-content a:hover {
-        background-color: #f8f9fa;
-    }
+        .result-item:last-child {
+            border-bottom: none;
+        }
 
-    .user-dropdown-content a:last-child {
-        color: #dc3545;
-    }
+        .result-item:hover {
+            background: #f8f9fa;
+            color: #007bff;
+        }
 
-</style>
+        .no-results {
+            padding: 12px 20px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .login-btn {
+            background: linear-gradient(45deg, #007bff, #00c4ff);
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+            color: white;
+        }
+
+        .user-dropdown .header-dropbtn {
+            display: flex;
+            align-items: center;
+            padding: 8px 15px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .user-dropdown .header-dropbtn:hover {
+            background: #f8f9fa;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .my-class-link {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 12px 20px;
+            transition: all 0.3s ease;
+        }
+
+        .my-class-link:hover {
+            color: #007bff;
+        }
+    </style>
+</head>
 
 <body>
 <header>
@@ -188,45 +231,41 @@
         <!-- Logo -->
         <div class="logo">
             <a href="/home">
-                <img src="../Images/logo.png" alt="Website Logo">
+                <img src="Images/logo.png" alt="Logo">
             </a>
         </div>
+
+        <!-- Navigation Links -->
+        <div class="header-dropdown">
+            <button class="header-dropbtn" onclick="location='/public-classes'">Public Classes</button>
+        </div>
+
         <%
             SettingDAO settingDAO = WebManager.getInstance().getSettingDAO();
             List<Setting> categories = settingDAO.findAllByType(SettingType.Category);
-
-            User user = (User) session.getAttribute("user"); // Lấy thông tin người dùng từ session
-            String myClassHref = "#"; // Mặc định không có đường dẫn
-
+            User user = (User) session.getAttribute("user");
+            String myQuizHref = "#";
             if (user != null) {
-                int roleId = user.getRoleId();
-
-                if (roleId == 3) { // Student
-                    myClassHref = "/class_student";
-                } else if (roleId == 2) { // Teacher
-                    myClassHref = "/class_teacher";
-                }
-            }
+                if(user.getRoleId() == 3) {
         %>
 
-<%--        <!-- Dropdowns -->--%>
-<%--        <div class="dropdown">--%>
-<%--            <button class="dropbtn">Categories</button>--%>
-<%--            <div class="dropdown-content">--%>
-<%--                <% for (Setting category : categories) { %>--%>
-<%--                <a href="#"><%= category.getTitle() %></a>--%>
-<%--                <% } %>--%>
-<%--            </div>--%>
-<%--        </div>--%>
+        <a href="/my-class" class="my-class-link">My Class</a>
 
-        <!-- Dropdowns -->
-        <div class="dropdown">
-            <button class="dropbtn" onclick="location='/public-classes'">Public Classes</button>
+        <% }  else { %>
+        <a href="/class_teacher" class="my-class-link">My Class</a>
+
+        <%} %>
+
+        <div>
+            <a id="myQuiz" href="/my_quiz" style="text-decoration: none; color: black">My Quiz</a>
         </div>
 
         <div>
-            <a id="myClassLink" href="<%= myClassHref %>" style="text-decoration: none; color: black">My Class</a>
+            <a id="myFlashcard" href="/card?action=choose" style="text-decoration: none; color: black">My Flashcard</a>
         </div>
+
+
+        <%}%>
 
         <!-- Search Bar -->
         <div class="search-container">
@@ -237,25 +276,23 @@
             <div id="searchResults"></div>
         </div>
 
-
         <!-- User Login/Profile Dropdown -->
         <div class="user-dropdown">
             <% if (user == null) { %>
+            <a href="register" class="login-btn">Register</a>
             <a href="login" class="login-btn">Login</a>
             <% } else { %>
-            <!-- Dropdown -->
-            <div class="dropdown">
-                <button class="dropbtn">
-                    <i class="fas fa-user-circle"></i>
-                    <span><%= user.getUsername() %></span>
+            <div class="header-dropdown">
+                <button class="header-dropbtn">
+                    <img src="<%= user.getAvatar() != null ? user.getAvatar() : "Images/default-avatar.png" %>"
+                         alt="User Avatar" class="user-avatar">
+                    <span><%= user.getFullName() %></span>
                 </button>
-                <div class="dropdown-content">
+                <div class="header-dropdown-content">
                     <a href="profile"><i class="fas fa-user me-2"></i>Profile</a>
-
-                    <% if(user.getRoleId() != 3){ %>
-                    <a href="admin"><i class="fas fa-user me-2"></i>Web Settings</a>
+                    <% if(user.getRoleId() != 3) { %>
+                    <a href="admin"><i class="fas fa-cog me-2"></i>Web Settings</a>
                     <% } %>
-
                     <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
                 </div>
             </div>
@@ -265,17 +302,13 @@
 
     <script>
         function logout() {
-            // Make an AJAX request to logout the user
             fetch('/logout', {
-                method: 'GET', // or POST if your servlet requires POST
-                credentials: 'same-origin',  // To ensure the session cookie is sent with the request
+                method: 'GET',
+                credentials: 'same-origin',
             })
                 .then(response => {
-                    console.log(response);
-
-                    // Redirect to the login page after successful logout
                     if (response.ok) {
-                        window.location.href = 'login'; // Redirect to the login page (or homepage)
+                        window.location.href = 'login';
                     } else {
                         alert('Error logging out. Please try again.');
                     }
@@ -286,51 +319,47 @@
                 });
         }
 
-
         let debounceTimer;
-
         function debounceSearch() {
             clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(searchSubjects, 300); // Wait 300ms after typing stops
+            debounceTimer = setTimeout(searchSubjects, 300);
         }
 
         function searchSubjects() {
-
             let query = $("#searchInput").val();
             if (query.length < 2) {
                 $("#searchResults").hide();
                 return;
             }
 
-            console.log($("#searchInput").val());
-
             $.ajax({
                 url: "/searchClasses",
                 type: "GET",
                 data: { query: query },
                 dataType: "json",
-                success: function (data) {
+                success: function(data) {
                     let html = "";
-                    data.forEach(subject => {
-                        html += `<div class="result-item" onclick="selectSubject('${subject.id}')">
-                                    <strong>${subject.className}</strong> - ${subject.code}
-                                </div>`;
-                    });
+                    if (data.length === 0) {
+                        html = `<div class="no-results">No results found</div>`;
+                    } else {
+                        data.forEach(subject => {
+                            html += `<div class="result-item" onclick="selectSubject('${subject.id}', '${subject.className} - ${subject.code}')">
+                                        <strong>${subject.className}</strong> - ${subject.code}
+                                    </div>`;
+                        });
+                    }
                     $("#searchResults").html(html).show();
                 },
-                error: function () {
-                    $("#searchResults").hide();
+                error: function() {
+                    $("#searchResults").html(`<div class="no-results">Error fetching results</div>`).show();
                 }
             });
         }
 
-        function selectSubject(name) {
-            $("#searchInput").val(name);
+        function selectSubject(id, displayName) {
+            $("#searchInput").val(displayName); // Show the class name and code in the input
             $("#searchResults").hide();
-
-            var redirectUrl = '/class-enroll?class-id=' + name;
-
-            window.location.href = redirectUrl;
+            window.location.href = '/class-enroll?class-id=' + id;
         }
 
         $(document).on("click", function(event) {
@@ -340,6 +369,5 @@
         });
     </script>
 </header>
-
 </body>
 </html>

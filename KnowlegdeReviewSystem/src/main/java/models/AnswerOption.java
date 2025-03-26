@@ -1,16 +1,15 @@
 package models;
 
-public class Answer {
+public class AnswerOption {
     private int id;
     private int questionId;
     private String content;
     private boolean isAnswer;
 
-    public Answer() {
-
+    public AnswerOption() {
     }
 
-    public Answer(int id, int questionId, String content, boolean isAnswer) {
+    public AnswerOption(int id, int questionId, String content, boolean isAnswer) {
         this.id = id;
         this.questionId = questionId;
         this.content = content;
@@ -51,7 +50,7 @@ public class Answer {
 
     @Override
     public String toString() {
-        return "Answer{" +
+        return "AnswerOption{" +
                 "id=" + id +
                 ", questionId=" + questionId +
                 ", content='" + content + '\'' +

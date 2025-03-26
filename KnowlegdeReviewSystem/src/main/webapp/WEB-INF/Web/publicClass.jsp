@@ -1,3 +1,4 @@
+
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page session="true" %>
 <%@ page import="java.util.*" %>
@@ -17,110 +18,227 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <style>
+
+        html {
+            height: 100%;
+        }
+
+        .main-content {
+            flex: 1 0 auto; /* Grows to push footer down */
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
             padding: 0;
             background-color: #f8f9fa;
-            background-image: url('../Images/background.jpg'); /* Path to your HD image */
-            background-size: cover; /* Ensures the image covers the entire background */
-            background-position: center center; /* Centers the image */
-            background-attachment: fixed; /* Keeps the background fixed when scrolling */
-            background-repeat: no-repeat; /* Prevents the image from repeating */
+            background-image: url('/Images/background.jpg');
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
         }
 
-        /* Card Styles */
+        /* Filter Dropdown */
+        .filter-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .filter-dropdown {
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 25px;
+            border: 1px solid #007bff;
+            background-color: #ffffff;
+            color: #007bff;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s ease;
+            width: 250px;
+            appearance: none; /* Remove default arrow */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"><path fill="%23007bff" d="M7 10l5 5 5-5z"/></svg>'); /* Custom arrow */
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+        }
+
+        .filter-dropdown:hover {
+            border-color: #0056b3;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+        }
+
+        .filter-dropdown:focus {
+            border-color: #0056b3;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+        }
+
+        /* Card Container */
         .card-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
             padding: 20px;
+            justify-content: center;
         }
 
-        .card-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center; /* Centers the cards horizontally */
-            align-items: center; /* Aligns items vertically (if needed) */
-            gap: 20px;
-            padding: 20px;
-        }
-
+        /* Enhanced Card Styles */
         .card {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
             text-align: center;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
         }
+
         .card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.15);
+            transform: translateY(-12px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
         }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, #007bff, #00c6ff);
+        }
+
         .card h3 {
-            font-size: 20px;
-            margin-bottom: 15px;
-            font-weight: 600;
-            color: #333;
+            font-size: 22px;
+            margin: 10px 0;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .card h5 {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin: 5px 0;
         }
 
         .card p {
             font-size: 14px;
-            color: #555;
-            max-height: 40px; /* Set a maximum height */
-            overflow: hidden; /* Hide any overflow */
-            text-overflow: ellipsis; /* Display ellipsis (...) for overflowed text */
+            color: #34495e;
+            margin: 10px 0;
+            max-height: 40px;
+            overflow: hidden;
+            text-overflow: ellipsis;
             line-height: 1.5;
         }
 
-
         .card a {
+            display: inline-block;
             font-size: 16px;
             color: #007bff;
             text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
+            font-weight: 600;
+            padding: 8px 15px;
+            border-radius: 20px;
+            background: rgba(0, 123, 255, 0.1);
+            transition: all 0.3s ease;
         }
+
         .card a:hover {
-            color: #0056b3;
+            color: white;
+            background: #007bff;
         }
+
         .section-title {
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 700;
             margin: 30px 0;
-            color: #333;
+            color: #2c3e50;
             text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        #searchResults {
-            position: absolute;
-            width: 300px;
-            background: white;
-            border: 1px solid #ccc;
+        /* Modal Styles */
+        .modal {
             display: none;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-        .result-item {
-            padding: 8px;
-            border-bottom: 1px solid #ddd;
-            cursor: pointer;
-        }
-        .result-item:hover {
-            background: #f1f1f1;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
         }
 
+        .modal-content {
+            background: #ffffff;
+            padding: 25px;
+            width: 50%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+            text-align: left;
+            position: relative;
+            border-left: 6px solid #007bff;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .modal-content h2 {
+            color: #007bff;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .modal-content p {
+            font-size: 16px;
+            color: #555;
+            margin: 8px 0;
+        }
+
+        .enroll-btn {
+            background: #28a745;
+            color: white;
+            padding: 12px 25px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: background 0.3s ease;
+        }
+
+        .enroll-btn:hover {
+            background: #218838;
+        }
+
+        /* Pagination */
         .pagination-container {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 30px;
         }
 
         .page-btn {
             background-color: #007bff;
             color: white;
             border: none;
-            padding: 8px 14px;
+            padding: 10px 15px;
             margin: 5px;
             font-size: 16px;
             border-radius: 5px;
@@ -139,133 +257,72 @@
             cursor: default;
         }
 
-
-        /* Modal Background */
-        .modal {
-            display: none; /* Hidden by default */
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* Popup Card */
-        .modal-content {
-            background: #ffffff;
-            padding: 20px;
-            width: 50%;
-            max-width: 600px;
-            border-radius: 8px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            text-align: left;
-            position: relative;
-            border-left: 5px solid #007bff;
-        }
-
-        /* Responsive adjustments */
+        /* Responsive Adjustments */
         @media (max-width: 768px) {
+            .card-container {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
             .modal-content {
-                width: 80%;
+                width: 85%;
+            }
+            .filter-dropdown {
+                width: 200px;
+                font-size: 14px;
             }
         }
-
-        /* Close Button */
-        .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 20px;
-            cursor: pointer;
-            color: #888;
-        }
-
-        .close-btn:hover {
-            color: #000;
-        }
-
-        .modal-content h2 {
-            color: #007bff;
-            font-size: 22px;
-            margin-bottom: 10px;
-        }
-
-        .modal-content p {
-            font-size: 16px;
-            color: #555;
-            margin: 5px 0;
-        }
-
-        .enroll-section {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .enroll-btn {
-            background: #28a745;
-            color: white;
-            padding: 12px 20px;
-            font-size: 16px;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: 0.3s;
-        }
-
-        .enroll-btn:hover {
-            background: #218838;
-        }
-
     </style>
 </head>
 <body>
 
 <jsp:include page="header.jsp"></jsp:include>
 
+<div class="main-content">
 <!-- Random Courses Section -->
 <div class="section-title">Public Classes</div>
+
+<!-- Filter Dropdown -->
+<div class="filter-container">
+    <select class="filter-dropdown" id="subject-filter">
+        <option value="all">All Subjects</option>
+        <!-- Dynamic options will be added here via JavaScript -->
+    </select>
+</div>
+
 <div class="main-container">
     <div class="card-container" id="course-container">
         <!-- Cards will be loaded here dynamically -->
     </div>
 </div>
 
-
 <!-- Modal (Popup) -->
 <div id="classModal" class="modal">
     <div class="modal-content">
-        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <span class="close-btn" onclick="closeModal()">×</span>
         <h2>Class Information</h2>
         <p><strong>Class Name:</strong> <span id="class-name"></span></p>
         <p><strong>Class Code:</strong> <span id="class-code"></span></p>
         <p><strong>Subject:</strong> <span id="subject"></span></p>
         <p><strong>Instructor:</strong> <span id="instructor-name"></span></p>
         <p><strong>Class Status:</strong> <span id="class-status"></span></p>
-
         <div class="enroll-section">
             <button class="enroll-btn" onclick="enroll(modalClassId)">Enroll Now</button>
         </div>
     </div>
 </div>
 
-
 <script>
     let modalClassId;
+    let allCourses = [];
+    let filteredCourses = [];
 
     $(document).ready(function () {
-        let coursesPerPage = 6; // Number of courses per page
+        let coursesPerPage = 12;
         let currentPage = 1;
         let totalPages = 1;
-        let coursesData = [];
 
         function renderPagination() {
             let paginationContainer = $('#pagination');
-            paginationContainer.empty(); // Clear existing buttons
-
+            paginationContainer.empty();
             if (totalPages > 1) {
                 for (let i = 1; i <= totalPages; i++) {
                     let activeClass = i === currentPage ? 'active' : '';
@@ -276,50 +333,72 @@
 
         function renderCourses(page) {
             let container = $('#course-container');
-            container.empty(); // Clear existing content
+            container.empty();
 
             let start = (page - 1) * coursesPerPage;
             let end = start + coursesPerPage;
-            let paginatedCourses = coursesData.slice(start, end);
+            let paginatedCourses = filteredCourses.slice(start, end);
 
             $.each(paginatedCourses, function (index, classItem) {
                 let card = `
-                <div class="card">
-                            <h3>${classItem.className}</h3>
-                            <h5>Code: ${classItem.code}</h5>
-                            <h5>Subject: ${classItem.subjectName}</h5>
-                            <p>Manager ID: ${classItem.managerName}</p>
-                            <p>Status: ${classItem.status}</p>
-                            <a onclick="openModal(${classItem.id})"">Learn More</a>
-                </div>
+                    <div class="card">
+                        <h3>${classItem.className}</h3>
+                        <h5>Code: ${classItem.code}</h5>
+                        <h5>Subject: ${classItem.subjectName}</h5>
+                        <p>Manager: ${classItem.managerName}</p>
+                        <a onclick="openModal(${classItem.id})">Learn More</a>
+                    </div>
                 `;
                 container.append(card);
             });
         }
 
+        // Fetch courses and populate dropdown
         $.ajax({
-            url: 'getAllClasses',  // Call HomeServlet
+            url: 'getAllClasses',
             method: 'GET',
             dataType: 'json',
             success: function (data) {
-                console.log(data);
-                coursesData = data;
-                totalPages = Math.ceil(data.length / coursesPerPage);
+                allCourses = data;
+                filteredCourses = data;
+                totalPages = Math.ceil(filteredCourses.length / coursesPerPage);
                 renderCourses(currentPage);
                 renderPagination();
+
+                // Populate dropdown dynamically
+                let subjects = [...new Set(data.map(item => item.subjectName))];
+                let dropdown = $('#subject-filter');
+                subjects.forEach(subject => {
+                    dropdown.append(`<option value="${subject}">${subject}</option>`);
+                });
             },
             error: function () {
                 alert('Failed to load courses.');
             }
         });
 
+        // Pagination click handler
         $(document).on('click', '.page-btn', function () {
             currentPage = parseInt($(this).data('page'));
             renderCourses(currentPage);
             renderPagination();
         });
-    });
 
+        // Dropdown change handler
+        $('#subject-filter').on('change', function () {
+            let subject = $(this).val();
+            if (subject === 'all') {
+                filteredCourses = allCourses;
+            } else {
+                filteredCourses = allCourses.filter(course => course.subjectName === subject);
+            }
+
+            currentPage = 1;
+            totalPages = Math.ceil(filteredCourses.length / coursesPerPage);
+            renderCourses(currentPage);
+            renderPagination();
+        });
+    });
 
     function openModal(classId) {
         document.getElementById("classModal").style.display = "flex";
@@ -334,7 +413,6 @@
                     $('#instructor-name').text(data.managerName);
                     $('#class-status').text(data.status);
                     $('#subject').text(data.subjectName);
-
                     modalClassId = classId;
 
                     if (data.enrollmentStatus === "Pending") {
@@ -374,7 +452,6 @@
             .then(data => {
                 if (data.success) {
                     alert(data.success);
-                    console.log("Enrolled Successfully", data);
                     location.reload();
                 } else {
                     if (data.redirectUrl != null) {
@@ -388,13 +465,11 @@
                 alert("There was an error processing your enrollment.");
             });
     }
-
 </script>
 
 <!-- Pagination Container -->
-<div id="pagination" style="text-align: center; margin-top: 20px;"></div>
-
-
+<div id="pagination" class="pagination-container"></div>
+</div>
 <jsp:include page="footer.jsp"></jsp:include>
 
 </body>

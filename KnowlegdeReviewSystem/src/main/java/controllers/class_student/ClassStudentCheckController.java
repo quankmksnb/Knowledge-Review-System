@@ -64,15 +64,20 @@ public class ClassStudentCheckController extends HttpServlet {
         User student = userDAO.findByEmail(email);
         boolean exists = false;
         boolean approved = false;
+        String username1 = null;
+        String fullname = null;
 
         if (student != null) {
             exists = classDAO.isStudentInClass(student.getId(), classId);
             approved = classDAO.isStudentApprovedInClass(student.getId(), classId);
+
+            username1 = student.getUsername();
+            fullname = student.getFullName();
         }
 
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
-        out.print("{\"exists\": " + exists + ", \"approved\": " + approved + "}");
+        out.print("{\"exists\": " + exists + ", \"approved\": " + approved + ", \"username1\": \"" + username1 + "\", \"fullname\": \"" + fullname + "\"}");
         out.flush();
     }
 

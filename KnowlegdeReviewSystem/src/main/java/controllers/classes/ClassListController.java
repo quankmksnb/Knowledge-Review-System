@@ -102,6 +102,14 @@ public class ClassListController extends HttpServlet {
 
         ClassDAO classDAO = new ClassDAO();
         classDAO.create(newClass);
+        classDAO.addStudentToClass(
+                classDAO.getClassByCriteria(code,
+                                subjectId,
+                                managerId,
+                                semesterId,
+                                className)
+                        .getId()
+                , managerId);
 
         request.getSession().setAttribute("message", "Class created successfully");
         response.sendRedirect("class_management");

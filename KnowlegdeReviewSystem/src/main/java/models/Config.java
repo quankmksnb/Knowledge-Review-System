@@ -5,6 +5,7 @@ public class Config {
     private int subjectId;
     private int typeId;
     private String description;
+    private String status;
 
     public Config() {
     }
@@ -46,5 +47,13 @@ public class Config {
 
     public void setSubjectId(int subjectId) {
         this.subjectId = subjectId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

@@ -68,7 +68,7 @@
         }
 
         .btn-primary {
-            background-color: #9370DB;
+            background-color: blue;
             color: white;
             border-radius: 8px;
             padding: 10px 20px;
@@ -76,7 +76,7 @@
         }
 
         .btn-primary:hover {
-            background-color: #7B68EE;
+            background-color: darkblue;
         }
 
         .row .col-md-6 {
@@ -97,7 +97,11 @@
     </style>
 </head>
 <body>
-<%Subject subject = (Subject) request.getAttribute("subject");%>
+<%
+    Subject subject = (Subject) session.getAttribute("subject");
+    String subjectName = subject.getSubjectName();
+    int subjectId = subject.getId();
+%>
 <div class="container-fluid">
     <div class="row">
         <!-- Sidebar -->
@@ -126,6 +130,9 @@
                     <ul class="nav nav-tabs">
                         <li class="nav-item">
                             <a class="nav-link active" href="subject">GENERAL</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="lesson_list?subjectId=<%=subjectId%>">LESSON</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="config">CONFIG</a>
@@ -183,6 +190,12 @@
                                             <label class="form-check-label" for="statusInactive">Inactive</label>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="col-md-4">
+
+                                    <label class="form-label" for="manage">Manage By</label>
+
+                                    <input type="text" class="form-control popup" id="manage" name="manage" value="admin" readonly>
                                 </div>
                             </div>
                             <div class="text-end">

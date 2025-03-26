@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import models.Class;
+import models.ClassStatus;
 import models.User;
 import models.dao.ClassDAO;
 import models.dao.SubjectDAO;
@@ -59,10 +60,34 @@ public class ClassSemesterFilterController  extends HttpServlet {
         // Trả về HTML để cập nhật danh sách lớp
         PrintWriter out = response.getWriter();
         for (Class cls : filteredClasses) {
+            String statusBadge = "";
+            String iconClass = "";
+            String statusText = "";
+
+            // Xác định trạng thái của lớp học
+            if (cls.getStatus().equals(ClassStatus.Public)) {
+                statusBadge = "bg-success";
+                iconClass = "bi bi-unlock";
+                statusText = "View: Public";
+            } else if (cls.getStatus().equals(ClassStatus.Private)) {
+                statusBadge = "bg-dark";
+                iconClass = "bi bi-lock";
+                statusText = "View: Private";
+            } else {
+                statusBadge = "bg-secondary";
+                statusText = "";
+            }
+
+            // Tạo HTML cho mỗi lớp
             out.println("<div class='card'>"
                     + "<h3>" + subjectCodeMap.get(cls.getId()) + "</h3>"
                     + "<h5>Class: " + cls.getCode() + "</h5>"
                     + "<p>" + subjectNameMap.get(cls.getId()) + "</p>"
+                    + "<p>"
+                    + "<span class='badge " + statusBadge + "'>"
+                    + "<i class='" + iconClass + "'></i> " + statusText
+                    + "</span>"
+                    + "</p>"
                     + "<div style='display: flex; justify-content: space-between; margin-top: 10px;'>"
                     + "<a href='class_student_detail?classId=" + cls.getId() + "'>View Students</a>"
                     + "<a href='#'>View Details</a>"

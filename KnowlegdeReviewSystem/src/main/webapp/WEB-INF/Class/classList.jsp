@@ -204,6 +204,7 @@
                     <a class="nav-link" href="/subject"><i class="bi bi-book"></i> Subject</a>
                     <a class="nav-link" href="/class_management"><i class="bi bi-people"></i> Class</a>
                     <a class="nav-link" href="/setting"><i class="bi bi-gear"></i> Setting</a>
+                    <a class="nav-link" href="question?action=choose"><i class="bi bi-question-octagon"></i>Question</a>
                 </nav>
             </div>
         </div>
@@ -314,8 +315,8 @@
                                             <label for="manager" class="form-label">Teacher</label>
                                             <input type="text" class="form-control popup" id="manager" name="manager"
                                                    required>
-                                            <span id="managerError" class="text-danger ms-2"
-                                                  style="display:none;"></span>
+                                            <small id="managerError" class="text-danger ms-2"
+                                                  style="display:none;"></small>
                                         </div>
 
                                         <div class="col-md-6 mb-3">

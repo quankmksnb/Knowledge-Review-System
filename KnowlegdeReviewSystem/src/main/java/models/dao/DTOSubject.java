@@ -30,6 +30,7 @@ public class DTOSubject {
         this.domain = domain;
         this.modifiedAt = modifiedAt;
         this.status = status;
+
     }
 
     public String getCode() {
@@ -79,4 +80,6 @@ public class DTOSubject {
     public void setStatus(boolean status) {
         this.status = status;
     }
+
+
 }

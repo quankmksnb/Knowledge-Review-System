@@ -54,7 +54,7 @@
             padding: 50px;
             border-radius: 12px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 900px;
+            max-width: 75vw;
         }
 
         .form-control {
@@ -95,6 +95,7 @@
                     <a class="nav-link" href="/subject"><i class="bi bi-book"></i> Subject</a>
                     <a class="nav-link" href="/class_management"><i class="bi bi-people"></i> Class</a>
                     <a class="nav-link" href="/setting"><i class="bi bi-gear"></i> Setting</a>
+                    <a class="nav-link" href="question?action=choose"><i class="bi bi-question-octagon"></i>Question</a>
                 </nav>
             </div>
         </div>

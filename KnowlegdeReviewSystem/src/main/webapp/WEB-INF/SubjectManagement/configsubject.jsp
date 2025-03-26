@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ page import="models.DTOConfig" %>
 <%@ page import="models.Setting" %>
 <%@ page import="java.util.List" %>
@@ -11,7 +12,8 @@
     <title>Subject Configuration</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
           rel="stylesheet">
     <style>
@@ -44,6 +46,8 @@
             font-weight: bold;
             color: #333;
             margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
         }
 
         .form-container {
@@ -70,7 +74,7 @@
         }
 
         .btn-primary {
-            background-color: #9370DB;
+            background-color: blue;
             color: white;
             border-radius: 8px;
             padding: 10px 20px;
@@ -78,8 +82,9 @@
         }
 
         .btn-primary:hover {
-            background-color: #7B68EE;
+            background-color: darkblue;
         }
+
 
         .row .col-md-6 {
             margin-bottom: 25px;
@@ -106,8 +111,33 @@
         }
 
         .modal-header {
-            background-color: #9370DB;
+            background-color: #2f3b52;
             color: white;
+            border-bottom: none;
+        }
+
+        .modal-body {
+            background-color: #2f3b52;
+            color: #ffffff;
+        }
+
+        .modal-footer {
+            background-color: #2f3b52;
+
+        }
+
+        .popup {
+            background-color: #3e4a67;
+            color: whitesmoke;
+            border: 1px solid #4d5b75;
+            border-radius: 8px;
+            padding: 0.8rem;
+        }
+
+        .popup:focus {
+            background-color: #4a5b72;
+            border-color: #007bff;
+            color: whitesmoke;
         }
 
         .custom-toast {
@@ -136,11 +166,39 @@
             background-color: #dc3545;
             color: white;
         }
+        .config-table {
+            margin: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .config-table th, .config-table td {
+            text-align: center;
+            padding: 15px;
+            border: none;
+        }
+
+        .config-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .config-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .config-table tr:hover {
+            background-color: #eef1f5;
+        }
     </style>
 </head>
+
 <body>
 <%
-    DTOConfig dtoConfig = (DTOConfig) request.getAttribute("dtoConfig");
+    List<DTOConfig> dtoConfig = (List<DTOConfig>) request.getAttribute("dtoConfigList");
     Subject subject = (Subject) session.getAttribute("subject");
     List<Setting> settingTypes = (List<Setting>) request.getAttribute("settingTypes");
     String subjectName = subject.getSubjectName();
@@ -189,61 +247,80 @@
                             <a class="nav-link" href="subject?action=update&id=<%=subjectId%>">GENERAL</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" href="config">CONFIG SUBJECT</a>
+                            <a class="nav-link" href="subject?action=getLesson&id=<%=subject.getId()%>">LESSON</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="config">CONFIG</a>
                         </li>
                     </ul>
                 </div>
 
                 <!-- Subject Configuration Section -->
                 <div class="container">
-                    <div class="form-container">
-                        <div class="header-bar">Config of <%= subjectName %>
-                        </div>
-
-                        <% if (dtoConfig != null) { %>
-                        <!-- Hiển thị thông tin config nếu đã tồn tại -->
-                        <form action="config" method="POST">
-                            <input type="hidden" name="action" value="update">
-                            <input type="hidden" name="id" value="<%= dtoConfig.getId() %>">
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label for="subjectName" class="form-label">Subject Name</label>
-                                    <input type="text" class="form-control" id="subjectName" name="subjectName"
-                                           value="<%= dtoConfig.getSubjectName() %>" readonly>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="title" class="form-label">Configuration Type</label>
-                                    <select class="form-select" id="title" name="typeId" required>
-                                        <option value="" selected disabled>Select a configuration type</option>
-                                        <% if (settingTypes != null) {
-                                            for (Setting setting : settingTypes) { %>
-                                        <option value="<%= setting.getId() %>" <%=setting.getTitle().equals(dtoConfig.getType()) ? "selected" : ""%>><%= setting.getTitle() %>
-                                        </option>
-                                        <% }
-                                        } %>
-                                    </select>
-                                </div>
-                                <div class="col-md-12">
-                                    <label for="description" class="form-label">Description</label>
-                                    <textarea class="form-control" id="description" name="description"
-                                              rows="3"><%= dtoConfig.getDescription() %></textarea>
-                                </div>
-                            </div>
-                            <div class="text-end">
-                                <input type="submit" name="submit" value="Update Configuration" class="btn-primary">
-                            </div>
-                        </form>
-                        <% } else { %>
-                        <div class="no-config-message">
-                            <p>Subject haven't configured</p>
-                            <button type="button" class="btn-primary" data-bs-toggle="modal"
+                        <div class="header-bar">
+                            <h3>Config of <%= subjectName %></h3>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                     data-bs-target="#createConfigModal">
                                 Create Config
                             </button>
                         </div>
+
+                        <%if (dtoConfig != null && !dtoConfig.isEmpty()) {
+                            %>
+                        <div class="table-responsive config-table">
+                            <table class = "table">
+                                <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <%for (DTOConfig configSubject : dtoConfig) {%>
+                                <tr>
+                                    <td>
+                                        <%=configSubject.getType()%>
+                                    </td>
+                                    <td>
+                                        <%=configSubject.getDescription()%>
+                                    </td>
+                                    <td>
+                                        <% if (configSubject.getStatus().equals("Active")) { %>
+                                        <span class="badge bg-success">Active</span>
+                                        <% } else { %>
+                                        <span class="badge bg-danger">Inactive</span>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                       <div>
+                                           <a href="config?action=changeStatus&id=<%= configSubject.getId() %>&status=<%= configSubject.getStatus() %>"
+                                              class="btn btn-sm <%= configSubject.getStatus().equals("Active") ? "btn-danger" : "btn-success" %>">
+                                               <i class="bi <%= configSubject.getStatus().equals("Active") ? "bi-x-circle" : "bi-check-circle" %>"></i>
+                                           </a>
+                                           <a href="config?action=update&id=<%=configSubject.getId()%>"
+                                              class="btn btn-sm btn-primary">
+                                               <i class="bi bi-pen"></i>
+                                           </a>
+
+                                       </div>
+                                    </td>
+                                </tr>
+                                <%}%>
+                                </tbody>
+                            </table>
+                        </div>
+
+
+
+
+                        <%}  else { %>
+                        <div class="no-config-message">
+                            <p>Subject haven't configured</p>
+                        </div>
                         <% } %>
-                    </div>
+
                 </div>
             </div>
         </div>
@@ -263,7 +340,7 @@
                 <form action="config" method="POST" id="createConfigForm">
                     <input type="hidden" name="action" value="create">
 
-                    <div class="mb-3">
+                    <div class="mb-3 col-md-6" >
                         <label for="configType" class="form-label">Configuration Type</label>
                         <select class="form-select" id="configType" name="typeId" required>
                             <option value="" selected disabled>Select a configuration type</option>
@@ -277,7 +354,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="configDescription" class="form-label">Description</label>
-                        <input class="form-control" id="configDescription" name="description" rows="3" required></input>
+                        <textarea class="form-control" id="configDescription" name="description" rows="6" required></textarea>
                     </div>
                 </form>
             </div>
@@ -288,6 +365,8 @@
         </div>
     </div>
 </div>
+
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Get status parameter from URL
@@ -323,8 +402,6 @@
     });
 
 
-
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

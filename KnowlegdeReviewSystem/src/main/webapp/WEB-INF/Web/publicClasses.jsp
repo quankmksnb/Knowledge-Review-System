@@ -355,7 +355,6 @@
         <p><strong>Class Code:</strong> <span id="class-code"></span></p>
         <p><strong>Subject:</strong> <span id="subject"></span></p>
         <p><strong>Instructor:</strong> <span id="instructor-name"></span></p>
-        <p><strong>Class Status:</strong> <span id="class-status"></span></p>
 
         <div class="enroll-section">
             <button class="enroll-btn" onclick="enroll()">Enroll Now</button>

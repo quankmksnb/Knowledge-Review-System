@@ -3,6 +3,7 @@ package controllers.class_student;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,12 +13,16 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import models.Class;
 import models.User;
+import models.UserStatus;
 import models.dao.ClassDAO;
 import models.dao.UserDAO;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import services.GenerateRandomPassword;
+import services.MailSender;
+import services.StringEncoder;
 
 /**
  * @author Admin
@@ -63,7 +68,6 @@ public class ClassStudentDetailController extends HttpServlet {
         UserDAO userDAO = new UserDAO();
 
         if ("addStudent".equals(action)) {
-            // Thêm sinh viên bằng email nhập thủ công
             String emailInput = request.getParameter("email");
             User student = userDAO.findByEmail(emailInput);
 
@@ -71,9 +75,40 @@ public class ClassStudentDetailController extends HttpServlet {
                 boolean success = classDAO.addStudentToClass(classId, student.getId());
                 session.setAttribute("message", success ? "Student added successfully!" : "Student is already in this class.");
             } else {
-                session.setAttribute("messageError", "Student email not found!");
-            }
+                // Create new student
+                String username = request.getParameter("username");
+                String fullname = request.getParameter("fullname");
+                String randomPassword = GenerateRandomPassword.generateRandomPassword(8);
 
+                // Create new user
+                student = new User();
+                student.setEmail(emailInput);
+                student.setUsername(username);
+                student.setFullName(fullname);
+                student.setRoleId(3); // Student role
+                student.setStatus(UserStatus.NotVerified);
+                student.setCreatedAt(new Date(System.currentTimeMillis()));
+                student.setPasswordHash(StringEncoder.encodePassword(randomPassword));
+
+                userDAO.create(student);
+
+                User studentNew = userDAO.findByEmail(emailInput);
+
+                // Add student to class
+                classDAO.addStudentToClass(classId, studentNew.getId());
+
+                // Send email with random password
+                String subject = "[Knowledge Review System] Account Creation - Your Temporary Password";
+                String message = "<h1>Welcome to our service!</h1>" +
+                        "<p>Your account has been created successfully.</p>" +
+                        "<h3>Username: <strong>" + username + "</strong></h3>" +
+                        "<h3>Password: <strong>" + randomPassword + "</strong></h3>" +
+                        "<p>Please change your password after logging in.</p>";
+
+                MailSender.sendEmail(emailInput, subject, message);
+
+                session.setAttribute("message", "Student added and email sent successfully!");
+            }
         } else if ("importStudents".equals(action)) {
             // Import sinh viên từ file Excel
             Part filePart = request.getPart("file");

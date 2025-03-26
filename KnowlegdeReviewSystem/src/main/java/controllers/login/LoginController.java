@@ -155,10 +155,7 @@ public class LoginController extends HttpServlet {
         response.setContentType("application/json");
         response.getWriter().write(jsonResponse.toString());
     }
-
     private void handleGoogleSignIn(HttpServletRequest request, HttpServletResponse response, String idToken) throws IOException, ServletException {
-        //System.out.println(idToken);
-
         if (idToken == null || idToken.isEmpty()) {
             sendErrorResponse(response, "Google login failed.");
             return;
@@ -175,6 +172,10 @@ public class LoginController extends HttpServlet {
             // Extract user info from the token
             String email = googleIdToken.getEmail();
             String googleId = googleIdToken.getSubject();
+            String fullName = (String) googleIdToken.get("name");  // Get full name
+            String avatarUrl = (String) googleIdToken.get("picture"); // Get avatar URL
+
+            System.out.println(avatarUrl);
 
             UserDAO userDAO = WebManager.getInstance().getUserDAO();
             User user = userDAO.findByUsernameOrEmail(email);
@@ -183,12 +184,13 @@ public class LoginController extends HttpServlet {
             if (user == null) {
                 user = new User();
                 user.setEmail(email);
-                user.setFullName(email);
-                user.setUsername(email); // Use email as username
-                user.setPasswordHash(googleId); // Use Google ID as password hash
-                user.setRoleId(3); // Default role (e.g., 2 for regular user)
-                user.setStatus(UserStatus.Active); // Set status to active
-                userDAO.register(user); // Save the user to the database
+                user.setFullName(fullName != null ? fullName : email); // Default to email if name is null
+                user.setUsername(email);
+                user.setPasswordHash(googleId);
+                user.setRoleId(3);
+                user.setStatus(UserStatus.Active);
+                user.setAvatar(avatarUrl); // Save the avatar URL
+                userDAO.register(user);
             }
 
             user = userDAO.findByUsernameOrEmail(email);
@@ -201,6 +203,8 @@ public class LoginController extends HttpServlet {
             // Send success response
             JsonObject jsonResponse = new JsonObject();
             jsonResponse.addProperty("success", true);
+//            jsonResponse.addProperty("avatar", user.getAvatar()); // Send avatar URL in response
+//            jsonResponse.addProperty("fullName", user.getFullName());
 
             if (user.getStatus().equals(UserStatus.NotVerified)) {
                 jsonResponse.addProperty("redirectUrl", "/verify-account");
@@ -215,6 +219,7 @@ public class LoginController extends HttpServlet {
             sendErrorResponse(response, "An error occurred during Google login.");
         }
     }
+
 
     // Utility function to clear cookies
     private void clearCookies(HttpServletRequest request, HttpServletResponse response) {

@@ -1,6 +1,5 @@
 package models.dao;
 
-import controllers.WebManager;
 import models.DAO;
 import models.User;
 import models.UserStatus;
@@ -13,13 +12,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class UserDAO extends DatabaseConnector implements DAO<User> {
     Connection connection = getConnection();
@@ -31,7 +25,7 @@ public class UserDAO extends DatabaseConnector implements DAO<User> {
 
 
     @Override
-    public void create(User user) {
+    public int create(User user) {
         String sql = "INSERT INTO user (full_name, username, password_hash, email, role_id, status, created_at, modified_at) VALUES (?, ?, ?, ?, ?, ?, now(), now())";
 
         try (Connection connection = DatabaseConnector.getConnection();
@@ -50,19 +44,21 @@ public class UserDAO extends DatabaseConnector implements DAO<User> {
         } catch (SQLException e) {
             System.err.println("Error creating user: " + e.getMessage());
         }
+        return 0;
     }
 
     public void register(User user) {
-        String sql = "INSERT INTO user (username, password_hash, email, role_id, status, created_at, modified_at, full_name) VALUES (?, ?, ?, ?, ?, Now(), Now(), ?)";
+        String sql = "INSERT INTO user (username, avatar, password_hash, email, role_id, status, created_at, modified_at, full_name) VALUES (?, ?, ?, ?, ?, ?, Now(), Now(), ?)";
 
         try (Connection connection = DatabaseConnector.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, user.getUsername());
-            preparedStatement.setString(2, user.getPasswordHash());
-            preparedStatement.setString(3, user.getEmail());
-            preparedStatement.setInt(4, user.getRoleId());
-            preparedStatement.setString(5, user.getStatus().toString());
-            preparedStatement.setString(6, user.getFullName());
+            preparedStatement.setString(2, user.getAvatar());
+            preparedStatement.setString(3, user.getPasswordHash());
+            preparedStatement.setString(4, user.getEmail());
+            preparedStatement.setInt(5, user.getRoleId());
+            preparedStatement.setString(6, user.getStatus().toString());
+            preparedStatement.setString(7, user.getFullName());
             //System.out.println(preparedStatement);
 
             preparedStatement.executeUpdate();
@@ -80,17 +76,20 @@ public class UserDAO extends DatabaseConnector implements DAO<User> {
         try {
             String sql = "UPDATE krsdb.user " +
                     "SET full_name = ?, " +
+                    "password_hash = ?, " +
                     "email = ?, " +
                     "role_id = ?, " +
-                    "modified_at = ? " +
+                    "modified_at = NOW(), " +
+                    "avatar = ? " +
                     "WHERE id = ?";
 
             ps = connection.prepareStatement(sql);
             ps.setString(1, user.getFullName());
-            ps.setString(2, user.getEmail());
-            ps.setInt(3, user.getRoleId());
-            ps.setTimestamp(4, new java.sql.Timestamp(user.getModifiedAt().getTime()));
-            ps.setInt(5, user.getId());
+            ps.setString(2, user.getPasswordHash());
+            ps.setString(3, user.getEmail());
+            ps.setInt(4, user.getRoleId());
+            ps.setString(5, user.getAvatar());
+            ps.setInt(6, user.getId());
 
             ps.executeUpdate();
         } catch (SQLException ex) {
@@ -379,7 +378,7 @@ public class UserDAO extends DatabaseConnector implements DAO<User> {
     public User findByUsernameOrEmail(String usernameOrEmail) {
         System.out.println("Find User By Username or Email: " + usernameOrEmail);
 
-        String sql = "SELECT * FROM user WHERE username = ? OR email = ?";
+        String sql = "SELECT * FROM user WHERE (username = ? OR email = ?) AND (status = 'Active' OR status = 'NotVerified')";
         User user = null;
 
         try (Connection connection = DatabaseConnector.getConnection();
@@ -508,6 +507,7 @@ public class UserDAO extends DatabaseConnector implements DAO<User> {
                 user.setFullName(rs.getString("full_name"));
                 user.setEmail(rs.getString("email"));
                 user.setAvatar(rs.getString("avatar"));
+                user.setUsername(rs.getString("username"));
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
