@@ -6,15 +6,15 @@
         <entry key="file://$PROJECT_DIR$/src/main/webapp/SubjectManagement/listsubject.jsp" value="file://$PROJECT_DIR$/src/main/webapp/SubjectManagement" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/Admin/UserManagement/listuser.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/Admin/UserManagement" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/Admin/UserManagement/userList.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/Admin/UserManagement" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/CardManagement/listcard.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/CardManagement" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/CardManagement/mycard.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/CardManagement" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/Class/classList.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/Class" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/Class/listclass.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/Class" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/QuestionManagement/listquestion.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/QuestionManagement" />
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/Quiz/quizList.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/Quiz" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/SubjectManagement/configsubject.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/SubjectManagement" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/SubjectManagement/updateconfig.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/SubjectManagement" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/Web/classDetails.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/Web" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/Web/home.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/Web" />
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/Web/index.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/Web" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/index.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/listsubject.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/register.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />

@@ -13,65 +13,32 @@ import models.Config;
 import models.Lesson;
 import models.dao.ConfigDAO;
 import models.dao.LessonDAO;
+import services.dataaccess.ConfigService;
+import services.dataaccess.LessonService;
 
 /**
  * @author Admin
  */
 @WebServlet(name = "UpdateLessonController", urlPatterns = {"/update_lesson"})
 public class UpdateLessonController extends HttpServlet {
+    private LessonService lessonService = new LessonService();
+    private ConfigService configService = new ConfigService();
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
-     *
-     * @param request  servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet UpdateLessonController</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet UpdateLessonController at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request  servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
             int lessonId = Integer.parseInt(request.getParameter("id"));
 
-            // Get Lesson data
-            LessonDAO lessonDAO = new LessonDAO();
-            Lesson lesson = lessonDAO.getLessonById(lessonId);
+            Lesson lesson = lessonService.getLessonById(lessonId);
 
             // Get list of Chapters for the subject
             int subjectId = lesson.getSubjectId();
-            ConfigDAO configDAO = new ConfigDAO();
-            List<Config> chapterList = configDAO.getChaptersBySubject(subjectId);
+
+            List<Config> chapterList = configService.getChaptersBySubject(subjectId);
 
             // Get current chapter ID for the lesson
-            int currentChapterId = configDAO.getChapterIdByLessonId(lessonId);
+            int currentChapterId = configService.getChapterIdByLessonId(lessonId);
 
             // Set attributes
             request.setAttribute("lesson", lesson);
@@ -87,14 +54,6 @@ public class UpdateLessonController extends HttpServlet {
         }
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request  servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -103,12 +62,13 @@ public class UpdateLessonController extends HttpServlet {
             String title = request.getParameter("title");
             String description = request.getParameter("description");
             int chapterId = Integer.parseInt(request.getParameter("chapterId"));
+            String lessonVideo = request.getParameter("videoUrl");
 
-            LessonDAO lessonDAO = new LessonDAO();
-            boolean success = lessonDAO.updateLessonWithChapter(lessonId,  lessonDAO.getLessonById(lessonId).getSubjectId(), title, description, chapterId);
+
+            boolean success = lessonService.updateLessonWithChapter(lessonId,  lessonService.getLessonById(lessonId).getSubjectId(), title, description, chapterId, lessonVideo);
 
             if (success) {
-                response.sendRedirect("lesson_list?subjectId=" + lessonDAO.getLessonById(lessonId).getSubjectId());
+                response.sendRedirect("lesson_list?subjectId=" + lessonService.getLessonById(lessonId).getSubjectId());
             } else {
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error updating lesson");
             }
@@ -120,11 +80,6 @@ public class UpdateLessonController extends HttpServlet {
 
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
         return "Short description";

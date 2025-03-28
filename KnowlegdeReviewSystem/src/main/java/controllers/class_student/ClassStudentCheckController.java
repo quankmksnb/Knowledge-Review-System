@@ -11,6 +11,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import models.User;
 import models.dao.ClassDAO;
 import models.dao.UserDAO;
+import services.dataaccess.ClassService;
+import services.dataaccess.UserService;
 
 /**
  * @author Admin
@@ -18,8 +20,8 @@ import models.dao.UserDAO;
 @WebServlet(name = "ClassStudentCheckController", urlPatterns = {"/class_student_check"})
 public class ClassStudentCheckController extends HttpServlet {
 
-    private final ClassDAO classDAO = new ClassDAO();
-    private final UserDAO userDAO = new UserDAO();
+    private final ClassService classService = new ClassService();
+    private final UserService userService = new UserService();
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      *
@@ -61,15 +63,15 @@ public class ClassStudentCheckController extends HttpServlet {
         String email = request.getParameter("email");
         int classId = Integer.parseInt(request.getParameter("classId"));
 
-        User student = userDAO.findByEmail(email);
+        User student = userService.findByEmail(email);
         boolean exists = false;
         boolean approved = false;
         String username1 = null;
         String fullname = null;
 
         if (student != null) {
-            exists = classDAO.isStudentInClass(student.getId(), classId);
-            approved = classDAO.isStudentApprovedInClass(student.getId(), classId);
+            exists = classService.isStudentInClass(student.getId(), classId);
+            approved = classService.isStudentApprovedInClass(student.getId(), classId);
 
             username1 = student.getUsername();
             fullname = student.getFullName();

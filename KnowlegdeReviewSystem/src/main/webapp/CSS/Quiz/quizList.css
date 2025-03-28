@@ -1,0 +1,184 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    color: #333;
+}
+
+.content-table {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.content-table th, .content-table td {
+    text-align: center;
+    padding: 15px;
+    border: none;
+}
+
+.content-table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.content-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.content-table tr:hover {
+    background-color: #eef1f5;
+}
+
+.btn-primary, .btn-success {
+    border-radius: 8px;
+}
+
+.search-input, .dropdown select {
+    padding: 5px;
+    height: 40px;
+    border-radius: 8px;
+}
+
+.dropdown-container {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center; /* Vertically center */
+    justify-content: space-between; /* Distribute space evenly */
+    gap: 20px; /* Add space between elements */
+}
+
+.dropdown-container select,
+.search-input {
+    width: 200px; /* Set fixed width for consistent alignment */
+}
+
+.table-responsive {
+    margin-top: 20px;
+}
+
+.table th, .table td {
+    vertical-align: middle;
+}
+
+.modal-content {
+    background-color: #2f3b52 !important; /* Dark background */
+    border-radius: 12px; /* Rounded corners */
+    padding: 30px;
+}
+
+.modal-header {
+    background-color: #2f3b52 !important; /* Dark header background */
+    color: white !important;
+    border-bottom: none !important;
+}
+
+.modal-header .btn-close {
+    background-color: white !important;
+    border-radius: 100%;
+    color: white !important;
+}
+
+.modal-header .btn-close:hover {
+    color: #0056b3 !important; /* Change color on hover */
+}
+
+.modal-body {
+    background-color: #2f3b52 !important;
+    color: #ffffff !important;
+}
+
+/* Input and select fields inside modal */
+.popup {
+    background-color: #3e4a67 !important; /* Dark input background */
+    color: white !important;
+    border: 1px solid #4d5b75 !important; /* Subtle border */
+    border-radius: 8px;
+    padding: 0.8rem !important;
+}
+
+.popup:focus {
+    background-color: #4a5b72 !important; /* Darker background on focus */
+    border-color: #007bff !important;
+    color: white !important;
+}
+
+.btn-primary {
+    background-color: #007bff !important; /* Primary button color */
+    border-color: #007bff !important;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3 !important;
+    border-color: #004085 !important;
+}
+
+/* Small dropdowns inside the modal */
+.small-dropdown {
+    width: 120px;
+    height: 30px;
+    font-size: 14px;
+    padding: 2px 8px;
+}
+
+input, select {
+    border-radius: 8px;
+}
+
+/* Pagination Styles */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+    gap: 5px;
+}
+
+.pagination-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pagination-item:hover {
+    background-color: #f1f1f1;
+}
+
+.pagination-item.active {
+    background-color: #0d6efd;
+    color: white;
+    border-color: #0d6efd;
+}
+
+.pagination-item.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.container {
+    min-height: calc(100vh - 200px); /* Điều chỉnh giá trị này tùy theo chiều cao của header và footer */
+    display: flex;
+    flex-direction: column;
+}
+
+.site-footer {
+    flex-shrink: 0;
+    width: 100%;
+    background-color: #f8f9fa; /* Màu nền mặc định, bạn có thể thay đổi */
+    padding: 20px 0;
+    margin-top: auto;
+}
+

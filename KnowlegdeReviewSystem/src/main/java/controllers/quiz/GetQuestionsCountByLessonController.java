@@ -9,12 +9,15 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import models.dao.LessonDAO;
+import services.dataaccess.LessonService;
 
 /**
  * @author Admin
  */
 @WebServlet(name = "GetQuestionsCountByLessonController", urlPatterns = {"/getQuestionsCountByLesson"})
 public class GetQuestionsCountByLessonController extends HttpServlet {
+
+    private final LessonService lessonService = new LessonService();
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -27,10 +30,9 @@ public class GetQuestionsCountByLessonController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         int lessonId = Integer.parseInt(request.getParameter("lessonId"));
-        LessonDAO lessonDAO = new LessonDAO();
 
         // Lấy số câu hỏi trong bài học
-        int questionCount = lessonDAO.getQuestionCountByLessonId(lessonId);
+        int questionCount = lessonService.getQuestionCountByLessonId(lessonId);
 
         // Gửi kết quả về client
         response.setContentType("application/json");

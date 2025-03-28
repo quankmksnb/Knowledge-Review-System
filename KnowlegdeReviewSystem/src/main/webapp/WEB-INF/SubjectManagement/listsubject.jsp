@@ -4,175 +4,36 @@
 <%@ page import="models.Subject" %>
 <%@ page import="java.util.List" %>
 <%@ page import="models.dao.DTOSubject" %>
+<%@ page import="models.User" %>
 <html>
 <head>
     <title>Subject Management</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <!-- Bootstrap Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
           rel="stylesheet">
-    <style>
-        body {
-            background-color: #f4f6f9;
-        }
+    <link rel="stylesheet" href="CSS/SubjectQuestion/listsubjectquestion.css">
 
-        .sidebar {
-            background-color: #1a1f36;
-            min-height: 100vh;
-        }
-
-        .sidebar .nav-link {
-            color: #8b92a8;
-            padding: 0.8rem 1rem;
-            margin: 0.2rem 0;
-            border-radius: 6px;
-        }
-
-        .sidebar .nav-link:hover {
-            background-color: #2d3548;
-            color: #fff;
-        }
-
-        .header-bar {
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            padding: 15px;
-        }
-
-        .header-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .search-input {
-            background-color: #f8f9fa;
-            border: none;
-            padding-left: 2.5rem;
-            border-radius: 8px;
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #6c757d;
-        }
-
-        .subject-table {
-            margin: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .subject-table th, .subject-table td {
-            text-align: center;
-            padding: 15px;
-            border: none;
-        }
-
-        .subject-table th {
-            background-color: #f8f9fa;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .subject-table tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        .subject-table tr:hover {
-            background-color: #eef1f5;
-        }
-
-        .modal-content {
-            background-color: #2f3b52;
-            border-radius: 12px;
-            padding: 30px;
-        }
-
-        .modal-header {
-            background-color: #2f3b52;
-            color: white;
-            border-bottom: none;
-        }
-
-        .modal-body {
-            background-color: #2f3b52;
-            color: #ffffff;
-        }
-
-        .popup {
-            background-color: #3e4a67;
-            color: whitesmoke;
-            border: 1px solid #4d5b75;
-            border-radius: 8px;
-            padding: 0.8rem;
-        }
-
-        .popup:focus {
-            background-color: #4a5b72;
-            border-color: #007bff;
-            color: whitesmoke;
-        }
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1060;
-        }
-
-        .custom-toast {
-            min-width: 250px;
-        }
-
-        .toast-success {
-            background-color: #198754;
-            color: white;
-        }
-
-        .toast-error {
-            background-color: #dc3545;
-            color: white;
-        }
-
-    </style>
 </head>
+
+
+
 <body>
+
 <div class="container-fluid">
     <div class="row">
-        <!-- Sidebar -->
-        <div class="col-auto px-0 sidebar d-none d-md-block">
-            <div class="d-flex flex-column p-3">
-                <h5 class="text-white mb-4">AdminKit</h5>
-                <nav class="nav flex-column">
-                    <a class="nav-link" href="/home"><i class="bi bi-house"></i> Home</a>
-                    <a class="nav-link" href="/user"><i class="bi bi-person-circle"></i> User</a>
-                    <a class="nav-link" href="/subject"><i class="bi bi-book"></i> Subject</a>
-                    <a class="nav-link" href="/class_management"><i class="bi bi-people"></i> Class</a>
-                    <a class="nav-link" href="/setting"><i class="bi bi-gear"></i> Setting</a>
-                    <a class="nav-link" href="question?action=choose"><i class="bi bi-question-octagon"></i>Question</a>
-                </nav>
-            </div>
-        </div>
+        <jsp:include page="../Admin/homeAdmin.jsp"></jsp:include>
 
-        <!-- Main Content -->
+
         <div class="col p-0">
-            <!-- Header Bar -->
             <div class="header-bar d-flex justify-content-between align-items-center px-4">
                 <div class="d-flex align-items-center gap-3">
                     <div class="header-title">Subject Management</div>
                     <div class="position-relative">
-                        <i class="bi bi-search search-icon"></i>
-                        <input type="text" id="searchInput" class="form-control search-input"
-                               placeholder="Search subjects...">
+                        <label for="searchInput" class="search-input"></label>
+                        <input type="text" id="searchInput" class="form-control search-input" placeholder="Search subjects..."/>
                     </div>
                     <div class="ms-3">
                         <select name="domain" id="domain" class="form-select">
@@ -188,7 +49,7 @@
                 <div>
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                             data-bs-target="#newSubjectModal">
-                        <i class="bi bi-plus-circle"></i> New Subject
+                        <i class="bi bi-plus-circle"></i>
                     </button>
                 </div>
             </div>
@@ -202,7 +63,6 @@
                     <div class="toast-body" id="toastMessage"></div>
                 </div>
             </div>
-            <!-- Subject Table -->
             <div class="table-responsive subject-table">
                 <table class="table">
                     <thead>
@@ -246,9 +106,7 @@
                                    class="btn btn-sm <%= s.isStatus() ? "btn-danger" : "btn-success" %>">
                                     <i class="bi <%= s.isStatus() ? "bi-x-circle" : "bi-check-circle" %>"></i>
                                 </a>
-                                <a href="subject?action=delete&id=<%= s.getId() %>" class="btn btn-sm btn-danger">
-                                    <i class="bi bi-trash"></i>
-                                </a>
+
                             </div>
                         </td>
                     </tr>
@@ -261,13 +119,13 @@
     </div>
 </div>
 
-<!-- New Subject Modal -->
+
 <div class="modal fade" id="newSubjectModal" tabindex="-1" aria-labelledby="newSubjectModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title" id="newSubjectModalLabel">Create New Subject</h3>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                <button type="button" class="btn-close btn-close-black" data-bs-dismiss="modal"
                         aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -356,14 +214,12 @@
     });
 </script>
 <script>
-    // Get status parameter from URL
     const urlParams = new URLSearchParams(window.location.search);
     const status = urlParams.get('status');
     // Show toast if status parameter exists
     if (status) {
         showToast(status);
     }
-    // Function to show toast
     function showToast(status) {
         const toast = document.getElementById('statusToast');
         const toastIcon = document.getElementById('toastIcon');
@@ -387,26 +243,22 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        // Get input elements
         const codeInput = document.getElementById('code');
         const nameInput = document.getElementById('name');
         const submitButton = document.querySelector('button[type="submit"]');
 
-        // Validation function for code
         function validateCode(code) {
             // Regex for exactly 3 characters (uppercase letters and numbers)
             const codeRegex = /^[A-Z0-9]{3}$/;
             return codeRegex.test(code);
         }
 
-        // Validation function for name
         function validateName(name) {
             // Regex for name (only letters, numbers, and spaces)
             const nameRegex = /^[a-zA-Z0-9 ]+$/;
             return nameRegex.test(name);
         }
 
-        // Function to show validation error
         function showError(input, message) {
             // Remove any existing error states
             input.classList.remove('is-valid');
@@ -420,28 +272,23 @@
                 input.parentNode.appendChild(errorElement);
             }
 
-            // Set error message
             errorElement.textContent = message;
             errorElement.style.display = 'block';
         }
 
-        // Function to show validation success
         function showSuccess(input) {
             input.classList.remove('is-invalid');
             input.classList.add('is-valid');
 
-            // Hide error message if exists
             const errorElement = input.parentNode.querySelector('.invalid-feedback');
             if (errorElement) {
                 errorElement.style.display = 'none';
             }
         }
 
-        // Add real-time validation for code input
         codeInput.addEventListener('input', function() {
             const code = this.value.trim().toUpperCase();
 
-            // Immediately update input to uppercase
             this.value = code;
 
             if (code.length === 0) {
@@ -453,7 +300,6 @@
             }
         });
 
-        // Add real-time validation for name input
         nameInput.addEventListener('input', function() {
             const name = this.value.trim();
 
@@ -466,26 +312,22 @@
             }
         });
 
-        // Prevent form submission if validation fails
         document.querySelector('form').addEventListener('submit', function(event) {
             const code = codeInput.value.trim().toUpperCase();
             const name = nameInput.value.trim();
 
             let isValid = true;
 
-            // Validate code
             if (!validateCode(code)) {
                 showError(codeInput, 'Code must be 3 characters (A-Z, 0-9)');
                 isValid = false;
             }
 
-            // Validate name
             if (!validateName(name)) {
                 showError(nameInput, 'Name can only contain letters, numbers, and spaces');
                 isValid = false;
             }
 
-            // Prevent form submission if validation fails
             if (!isValid) {
                 event.preventDefault();
             }

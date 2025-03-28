@@ -166,7 +166,6 @@
 
         .lesson-description {
             font-size: 16px;
-            color: #7f8c8d;
             line-height: 1.6;
             background: #f8f9fa;
             padding: 15px;
@@ -250,6 +249,8 @@
             url: "class-info?class_id=" + classId,
             type: "GET",
             success: function (data) {
+                console.log(data);
+
                 if (data) {
                     $("#class-title").text(data.className);
                     chapters = data.chapters;
@@ -364,27 +365,7 @@
         }
 
         document.getElementById("lesson-title").innerText = lesson.title;
-        try {
-            if (typeof showdown !== 'undefined') {
-                const converter = new showdown.Converter({
-                    tables: true,
-                    tasklists: true,
-                    simplifiedAutoLink: true,
-                    ghCompatibleHeaderId: true,
-                    parseImgDimensions: true
-                });
-                document.getElementById("lesson-description").innerHTML = converter.makeHtml(lesson.description);
-                if (typeof Prism !== 'undefined') {
-                    Prism.highlightAll();
-                }
-            } else {
-                console.error("showdown.js is not loaded. Displaying raw Markdown.");
-                document.getElementById("lesson-description").innerText = lesson.description;
-            }
-        } catch (error) {
-            console.error("Error parsing Markdown with showdown.js:", error);
-            document.getElementById("lesson-description").innerText = lesson.description;
-        }
+        document.getElementById("lesson-description").innerHTML = lesson.description;
 
         // Check if the lesson has a quiz and display the "Take Quiz" button
         checkForQuiz(lesson.id);

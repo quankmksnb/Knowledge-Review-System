@@ -15,12 +15,21 @@ import models.dao.ClassDAO;
 import models.dao.LessonDAO;
 import models.dao.QuizDAO;
 import models.dao.SubjectDAO;
+import services.dataaccess.ClassService;
+import services.dataaccess.LessonService;
+import services.dataaccess.QuizService;
+import services.dataaccess.SubjectService;
 
 /**
  * @author Admin
  */
 @WebServlet(name = "QuizListController", urlPatterns = {"/my_quiz"})
 public class QuizListController extends HttpServlet {
+
+    private final QuizService quizService = new QuizService();
+    private final LessonService lessonService = new LessonService();
+    private final SubjectService subjectService = new SubjectService();
+    private final ClassService classService = new ClassService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -34,13 +43,9 @@ public class QuizListController extends HttpServlet {
             return;
         }
 
-        QuizDAO quizDAO = new QuizDAO();
-        LessonDAO lessonDAO = new LessonDAO();
-        SubjectDAO subjectDAO = new SubjectDAO();
-        ClassDAO classDAO = new ClassDAO(); // DAO để truy vấn lớp học
 
         // Lấy danh sách subject mà user đã enroll vào
-        List<Subject> enrolledSubjects = classDAO.getEnrolledSubjectsByUserId(user.getId());
+        List<Subject> enrolledSubjects = classService.getEnrolledSubjectsByUserId(user.getId());
 
         // Lấy danh sách subject_id từ các subject đã enroll
         List<Integer> enrolledSubjectIds = new ArrayList<>();
@@ -49,11 +54,11 @@ public class QuizListController extends HttpServlet {
         }
 
         // Lấy danh sách bài học từ các subject mà user đã enroll vào
-        List<Lesson> lessons = lessonDAO.getLessonsByEnrolledSubjects(enrolledSubjectIds);
+        List<Lesson> lessons = lessonService.getLessonsByEnrolledSubjects(enrolledSubjectIds);
 
         // Map quizId → lesson.title
         Map<Integer, String> quizLessonTitleMap = new HashMap<>();
-        List<Quiz> quizList = quizDAO.findByUserId(user.getId());
+        List<Quiz> quizList = quizService.findByUserId(user.getId());
 
         // Pagination setup
         int currentPage = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
@@ -67,12 +72,12 @@ public class QuizListController extends HttpServlet {
         List<Quiz> paginatedQuizList = quizList.subList(startIndex, endIndex);
 
         for (Quiz quiz : paginatedQuizList) {
-            String lessonTitle = lessonDAO.getLessonTitleByQuizId(quiz.getId());
+            String lessonTitle = lessonService.getLessonTitleByQuizId(quiz.getId());
             quizLessonTitleMap.put(quiz.getId(), lessonTitle);
         }
 
         // Lấy dữ liệu cho dropdown (các subject đã enroll vào)
-        List<Lesson> lessonList = lessonDAO.findAll();
+        List<Lesson> lessonList = lessonService.findAll();
 
         // Gửi về JSP
         request.setAttribute("quizList", paginatedQuizList);
@@ -124,9 +129,6 @@ public class QuizListController extends HttpServlet {
         int lessonId = Integer.parseInt(request.getParameter("lesson"));
         String quizName = request.getParameter("quizName");
 
-        QuizDAO quizDAO = new QuizDAO();
-        LessonDAO lessonDAO = new LessonDAO();
-
         // Tạo quiz mới
         Quiz newQuiz = new Quiz();
         newQuiz.setSubjectId(subjectId);
@@ -134,18 +136,18 @@ public class QuizListController extends HttpServlet {
         newQuiz.setNumOfQuestions(numOfQuestions);
         newQuiz.setStatus(QuizStatus.Unfinished);
         newQuiz.setQuizName(quizName);
-        int quizId = quizDAO.create(newQuiz);  // Lấy quizId vừa tạo
+        int quizId = quizService.create(newQuiz);  // Lấy quizId vừa tạo
 
         // Liên kết với bài học
-        quizDAO.addQuizLesson(quizId, lessonId);
+        quizService.addQuizLesson(quizId, lessonId);
 
         // Lấy câu hỏi từ lesson
-        List<Question> questions = quizDAO.getQuestionsByLessonId(lessonId);
+        List<Question> questions = quizService.getQuestionsByLessonId(lessonId);
         List<Question> randomQuestions = getRandomQuestions(questions, numOfQuestions);
 
         // Thêm câu hỏi vào quiz
         for (Question question : randomQuestions) {
-            quizDAO.addQuizQuestion(quizId, user.getId(), question.getId());
+            quizService.addQuizQuestion(quizId, user.getId(), question.getId());
         }
 
         request.getSession().setAttribute("message", "Quiz created successfully");

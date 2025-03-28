@@ -16,31 +16,33 @@ import models.dao.ClassDAO;
 import models.dao.SettingDAO;
 import models.dao.SubjectDAO;
 import models.dao.UserDAO;
+import services.dataaccess.ClassService;
+import services.dataaccess.SettingService;
+import services.dataaccess.SubjectService;
+import services.dataaccess.UserService;
 
 /**
  * @author Admin
  */
 @WebServlet(name = "ClassUpdateController", urlPatterns = {"/class_update_management"})
 public class ClassUpdateController extends HttpServlet {
-
+    private final SettingService settingService = new SettingService();
+    private final SubjectService subjectService = new SubjectService();
+    private final ClassService classService = new ClassService();
+    private final UserService userService = new UserService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        SettingDAO settingDAO = new SettingDAO();
-        SubjectDAO subjectDAO = new SubjectDAO();
-        ClassDAO classDAO = new ClassDAO();
-        UserDAO userDAO = new UserDAO();
-
         int clasID = Integer.parseInt(request.getParameter("classId"));
-        List<Setting> domainList = settingDAO.findAllByType(SettingType.Category);
-        List<Subject> subjectList = subjectDAO.findAll();
-        Class oldClass = classDAO.findById(clasID);
-        String oldDomain = subjectDAO.getDomain(oldClass.getSubjectId());
-        String oldManager = userDAO.getManagerUsername(oldClass.getManagerId());
+        List<Setting> domainList = settingService.findAllByType(SettingType.Category);
+        List<Subject> subjectList = subjectService.findAll();
+        Class oldClass = classService.findById(clasID);
+        String oldDomain = subjectService.getDomain(oldClass.getSubjectId());
+        String oldManager = userService.getManagerUsername(oldClass.getManagerId());
         List<ClassStatus> statusOptions = Arrays.asList(ClassStatus.values());
-        List<User> approvedStudents = classDAO.getApprovedStudents(clasID);
+        List<User> approvedStudents = classService.getApprovedStudents(clasID);
 
 
         request.setAttribute("domainList", domainList);

@@ -118,7 +118,9 @@ CREATE TABLE `answer_option` (
 CREATE TABLE `term` (
   `id` integer PRIMARY KEY AUTO_INCREMENT,
   `lesson_id` integer,
-  `content` varchar(255)
+  `title` varchar(255),
+  `content` varchar(255),
+  `status` ENUM ('Active', 'Inactive')
 );
 
 CREATE TABLE `term_domain` (

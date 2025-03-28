@@ -16,12 +16,16 @@ import models.User;
 import models.UserStatus;
 import models.dao.SettingDAO;
 import models.dao.UserDAO;
+import services.dataaccess.SettingService;
+import services.dataaccess.UserService;
 
 /**
  * @author Admin
  */
 @WebServlet(name = "UserFilterController", urlPatterns = {"/user/search"})
 public class UserFilterController extends HttpServlet {
+    private final UserService userService = new UserService();
+    private final SettingService settingService = new SettingService();
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -31,10 +35,8 @@ public class UserFilterController extends HttpServlet {
         String contentSearch = request.getParameter("search_fullname");
         String roleFilter = request.getParameter("roleFilter");
         String statusFilter = request.getParameter("statusFilter");
-        UserDAO userDAO = new UserDAO();
-        SettingDAO settingDAO = new SettingDAO();
 
-        List<User> list = userDAO.searchUsers(contentSearch,
+        List<User> list = userService.searchUsers(contentSearch,
                 roleFilter != null && !roleFilter.isEmpty() ? Integer.parseInt(roleFilter) : null,
                 statusFilter != null && !statusFilter.isEmpty() ? UserStatus.valueOf(statusFilter) : null);
 
@@ -42,7 +44,7 @@ public class UserFilterController extends HttpServlet {
 
         for (User user : list) {
             if (!roleMap.containsKey(user.getRoleId())) {
-                Setting role = settingDAO.findById(user.getRoleId());
+                Setting role = settingService.findById(user.getRoleId());
                 if (role != null) {
                     roleMap.put(user.getRoleId(), role.getTitle());
                 } else {

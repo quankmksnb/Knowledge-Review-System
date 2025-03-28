@@ -1,4 +1,4 @@
-<%--
+<%@ page import="models.User" %><%--
   Created by IntelliJ IDEA.
   User: Admin
   Date: 2/27/2025
@@ -20,139 +20,66 @@
     <!-- Bootstrap Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
           rel="stylesheet">
-    <style>
-        body {
-            background-color: #f4f6f9;
-        }
-
-        .sidebar {
-            background-color: #1a1f36;
-            min-height: 100vh;
-        }
-
-        .sidebar .nav-link {
-            color: #8b92a8;
-            padding: 0.8rem 1rem;
-            margin: 0.2rem 0;
-            border-radius: 6px;
-        }
-
-        .sidebar .nav-link:hover {
-            background-color: #2d3548;
-            color: #fff;
-        }
-
-        .header-bar {
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            padding: 15px;
-        }
-
-        .header-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .tab-container {
-            background: #fff;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .nav-tabs .nav-link {
-            border: none;
-            color: #333;
-        }
-
-        .nav-tabs .nav-link.active {
-            background-color: #4c5a9c;
-            color: white;
-            border-radius: 10px 10px 0 0;
-        }
-
-        .class-table {
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .class-table th,
-        .class-table td {
-            text-align: center;
-            padding: 15px;
-            border: none;
-        }
-
-        .class-table th {
-            background-color: #f8f9fa;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .class-table tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        .class-table tr:hover {
-            background-color: #eef1f5;
-        }
-
-        .form-control {
-            background-color: #d9edf7;
-            border: none;
-            border-radius: 8px;
-            padding: 10px;
-        }
-
-        .btn-save {
-            background-color: #9370DB;
-            color: white;
-            border-radius: 8px;
-            padding: 10px 15px;
-            border: none;
-        }
-
-        .btn-save:hover {
-            background-color: #7B68EE;
-            color: white;
-        }
-
-        .row .col-md-6 {
-            margin-bottom: 25px;
-        }
-
-        .student-img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 1px solid #ddd;
-            display: block;
-            margin: auto;
-        }
-    </style>
+    <link rel="stylesheet" href="CSS/Class/classUpdate.css">
 </head>
 
 <body>
 
 <div class="container-fluid">
     <div class="row">
+
+        <!-- Sidebar -->
+        <%
+            User user = (User) session.getAttribute("user");
+        %>
         <div class="col-auto px-0 sidebar d-none d-md-block">
             <div class="d-flex flex-column p-3">
                 <h5 class="text-white mb-4">AdminKit</h5>
                 <nav class="nav flex-column">
-                    <a class="nav-link" href="/home"><i class="bi bi-house"></i> Home</a>
+                    <!-- Home: Accessible to all roles -->
+                    <a class="nav-link" href="/admin"><i class="bi bi-house"></i> Home</a>
+
+                    <!-- User: Admin only -->
+                    <% if (user != null && user.getRoleId() == 1) { %>
                     <a class="nav-link" href="/user"><i class="bi bi-person-circle"></i> User</a>
+                    <% } %>
+
+                    <!-- Subject: Admin and Subject Manager -->
+                    <% if (user != null && (user.getRoleId() == 1 || user.getRoleId() == 5)) { %>
                     <a class="nav-link" href="/subject"><i class="bi bi-book"></i> Subject</a>
+                    <% } %>
+
+
+                    <!-- Class: Admin, Teacher, Training Manager, Subject Manager -->
+                    <% if (user != null && (user.getRoleId() == 2)) { %>
+                    <a class="nav-link" href="/class_teacher"><i class="bi bi-people"></i> Class</a>
+                    <% } %>
+
+                    <!-- Class: Admin, Training Manager, Subject Manager -->
+                    <% if (user != null && (user.getRoleId() == 1 || user.getRoleId() == 4 || user.getRoleId() == 5)) { %>
                     <a class="nav-link" href="/class_management"><i class="bi bi-people"></i> Class</a>
+                    <% } %>
+
+                    <!-- Setting: Admin only -->
+                    <% if (user != null && user.getRoleId() == 1) { %>
                     <a class="nav-link" href="/setting"><i class="bi bi-gear"></i> Setting</a>
-                    <a class="nav-link" href="question?action=choose"><i class="bi bi-question-octagon"></i>Question</a>
+                    <% } %>
+
+                    <!-- Question: Admin and Subject Manager -->
+                    <% if (user != null && (user.getRoleId() == 1 || user.getRoleId() == 5)) { %>
+                    <a class="nav-link" href="question?action=choose"><i class="bi bi-question-octagon"></i> Question</a>
+                    <% } %>
+
+                    <!-- Term: Admin and Subject Manager -->
+                    <% if (user != null && (user.getRoleId() == 1 || user.getRoleId() == 5)) { %>
+                    <a class="nav-link" href="term?action=choose"><i class="bi bi-journal-text"></i> Term</a>
+                    <% } %>
+
+                    <a class="nav-link" href="/logout"><i class="bi bi-arrow-return-left"></i> Logout</a>
                 </nav>
             </div>
         </div>
+
 
         <div class="col p-0">
             <div class="header-bar d-flex justify-content-between align-items-center px-4">

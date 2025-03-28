@@ -18,12 +18,18 @@ import models.User;
 import models.dao.ClassDAO;
 import models.dao.SettingDAO;
 import models.dao.SubjectDAO;
+import services.dataaccess.ClassService;
+import services.dataaccess.SettingService;
+import services.dataaccess.SubjectService;
 
 /**
  * @author Admin
  */
 @WebServlet(name = "ClassTeacherListController", urlPatterns = {"/class_teacher"})
 public class ClassTeacherListController extends HttpServlet {
+    private final ClassService classService = new ClassService();
+    private final SubjectService subjectService = new SubjectService();
+    private final SettingService settingService = new SettingService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -32,28 +38,24 @@ public class ClassTeacherListController extends HttpServlet {
         User user = (User) session.getAttribute("user");
 
         if (user == null || user.getRoleId() != 2) {
-            response.sendRedirect("login");
+            response.sendRedirect("/error");
             return;
         }
 
-        ClassDAO classDAO = new ClassDAO();
-        SubjectDAO subjectDAO = new SubjectDAO();
-        SettingDAO settingDAO = new SettingDAO();
-
-        List<Setting> semesters = settingDAO.findAllBySemester();
+        List<Setting> semesters = settingService.findAllBySemester();
         int defaultSemesterId = (semesters.isEmpty()) ? -1 : semesters.get(0).getId();
 
         String semesterParam = request.getParameter("semesterId");
         int selectedSemesterId = (semesterParam != null) ? Integer.parseInt(semesterParam) : defaultSemesterId;
 
-        List<Class> teacherClasses = classDAO.findByManagerId(user.getId(), selectedSemesterId);
+        List<Class> teacherClasses = classService.findByManagerId(user.getId(), selectedSemesterId);
 
         Map<Integer, String> subjectCodeMap = new HashMap<>();
         Map<Integer, String> subjectNameMap = new HashMap<>();
 
         for (Class cls : teacherClasses) {
-            subjectCodeMap.put(cls.getId(), subjectDAO.getSubjectCodeById(cls.getSubjectId()));
-            subjectNameMap.put(cls.getId(), subjectDAO.getSubjectNameById(cls.getSubjectId()));
+            subjectCodeMap.put(cls.getId(), subjectService.getSubjectCodeById(cls.getSubjectId()));
+            subjectNameMap.put(cls.getId(), subjectService.getSubjectNameById(cls.getSubjectId()));
         }
 
 

@@ -16,12 +16,20 @@ import models.dao.ClassDAO;
 import models.dao.LessonDAO;
 import models.dao.QuizDAO;
 import models.dao.SubjectDAO;
+import services.dataaccess.ClassService;
+import services.dataaccess.LessonService;
+import services.dataaccess.QuizService;
+import services.dataaccess.SubjectService;
 
 /**
  * @author Admin
  */
 @WebServlet(name = "QuizUpdateController", urlPatterns = {"/quiz_detail"})
 public class QuizUpdateController extends HttpServlet {
+    private final QuizService quizService = new QuizService();
+    private final LessonService lessonService = new LessonService();
+    private final SubjectService subjectService = new SubjectService();
+    private final ClassService classService = new ClassService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -37,20 +45,16 @@ public class QuizUpdateController extends HttpServlet {
 
         int quizId = Integer.parseInt(request.getParameter("id"));
 
-        QuizDAO quizDAO = new QuizDAO();
-        LessonDAO lessonDAO = new LessonDAO();
-        SubjectDAO subjectDAO = new SubjectDAO();
-        ClassDAO classDAO = new ClassDAO();
 
         // Lấy thông tin quiz từ database
-        Quiz quiz = quizDAO.findById(quizId);
-        String lessonTitle = lessonDAO.getLessonTitleByQuizId(quizId);
-        String subjectName = subjectDAO.getSubjectNameById(quiz.getSubjectId());
+        Quiz quiz = quizService.findById(quizId);
+        String lessonTitle = lessonService.getLessonTitleByQuizId(quizId);
+        String subjectName = subjectService.getSubjectNameById(quiz.getSubjectId());
 
         // Lấy danh sách subjects và lessons để hiển thị trên dropdown
-        List<Subject> enrolledSubjects = classDAO.getEnrolledSubjectsByUserId(user.getId());
-        List<Lesson> lessons = lessonDAO.getLessonsBySubjectId(quiz.getSubjectId());
-        int lessonId = lessonDAO.getLessonIdByQuizId(quizId);
+        List<Subject> enrolledSubjects = classService.getEnrolledSubjectsByUserId(user.getId());
+        List<Lesson> lessons = lessonService.getLessonsBySubjectId(quiz.getSubjectId());
+        int lessonId = lessonService.getLessonIdByQuizId(quizId);
 
 
         // Set attributes để hiển thị trên JSP
@@ -83,7 +87,6 @@ public class QuizUpdateController extends HttpServlet {
         int lessonId = Integer.parseInt(request.getParameter("lesson"));
         int numOfQuestions = Integer.parseInt(request.getParameter("numOfQuestions"));
 
-        QuizDAO quizDAO = new QuizDAO();
 
         // Cập nhật quiz
         Quiz updatedQuiz = new Quiz();
@@ -93,24 +96,23 @@ public class QuizUpdateController extends HttpServlet {
         updatedQuiz.setUserId(user.getId());
         updatedQuiz.setNumOfQuestions(numOfQuestions);
         updatedQuiz.setStatus(QuizStatus.Unfinished); // Set trạng thái là Unfinished
-        quizDAO.update(updatedQuiz);
+        quizService.update(updatedQuiz);
 
         // Cập nhật bảng quiz_lesson (liên kết lại quiz và lesson)
-        quizDAO.updateQuizLesson(quizId, lessonId);
+        quizService.updateQuizLesson(quizId, lessonId);
 
         // Cập nhật bảng quiz_question: Xóa câu hỏi cũ và thêm câu hỏi mới từ lesson
-        quizDAO.deleteQuizQuestions(quizId); // Xóa các câu hỏi cũ trong quiz
+        quizService.deleteQuizQuestions(quizId); // Xóa các câu hỏi cũ trong quiz
 
         // Lấy câu hỏi mới từ lesson đã chọn
-        List<Question> questions = quizDAO.getQuestionsByLessonId(lessonId);
+        List<Question> questions = quizService.getQuestionsByLessonId(lessonId);
         List<Question> randomQuestions = getRandomQuestions(questions, numOfQuestions);
 
         // Thêm các câu hỏi mới vào quiz
         for (Question question : randomQuestions) {
-            quizDAO.addQuizQuestion(quizId, user.getId(), question.getId());
+            quizService.addQuizQuestion(quizId, user.getId(), question.getId());
         }
 
-        // Sau khi cập nhật xong, chuyển hướng về trang danh sách quiz
         request.getSession().setAttribute("message", "Quiz updated successfully");
         response.sendRedirect("my_quiz");
     }

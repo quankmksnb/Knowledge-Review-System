@@ -50,7 +50,6 @@ public class SubjectDAO extends DatabaseConnector implements DAO<Subject> {
             preparedStatement.setString(6, status);
             preparedStatement.setInt(7, createdBy);
 
-            // Print the SQL query with values
             String formattedSQL = String.format(
                     "INSERT INTO subject (category_id, domain_id, name, code, description, modified_at, status, created_by) " +
                             "VALUES (%d, %d, '%s', '%s', '%s', Now(), '%s', %d);",
@@ -177,7 +176,7 @@ public class SubjectDAO extends DatabaseConnector implements DAO<Subject> {
                         rs.getInt("id"),
                         rs.getInt("domain_id"),
                         rs.getInt("category_id"),
-                        rs.getString("name"), // Change to correct column name
+                        rs.getString("name"),
                         rs.getString("code"),
                         rs.getString("description"),
                         rs.getInt("created_by"),
@@ -189,7 +188,7 @@ public class SubjectDAO extends DatabaseConnector implements DAO<Subject> {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace(); // Log properly in a real-world scenario
+            e.printStackTrace();
         }
 
         return subjects;
@@ -229,9 +228,8 @@ public class SubjectDAO extends DatabaseConnector implements DAO<Subject> {
         return subjects;
     }
 
-
     public List<DTOSubject> findAlls(String sql) {
-        List<DTOSubject> list = new ArrayList<DTOSubject>();
+        List<DTOSubject> list = new ArrayList<>();
         ResultSet rs = null;
 
         try {
@@ -358,10 +356,4 @@ public class SubjectDAO extends DatabaseConnector implements DAO<Subject> {
         return subjects;
     }
 
-
-
-//    public static void main(String[] args) {
-//        SubjectDAO subject = new SubjectDAO();
-//        System.out.println(subject.getSubjectNameById(1));
-//    }
 }

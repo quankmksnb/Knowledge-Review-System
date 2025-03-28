@@ -177,7 +177,7 @@ public class QuizDAO extends DatabaseConnector implements DAO<Quiz> {
 
     public List<Question> getQuestionsByLessonId(int lessonId) {
         List<Question> questions = new ArrayList<>();
-        String sql = "SELECT * FROM question WHERE lesson_id = ?";
+        String sql = "SELECT * FROM question WHERE lesson_id = ? && status='active'";
         try (Connection conn = DatabaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -279,7 +279,6 @@ public class QuizDAO extends DatabaseConnector implements DAO<Quiz> {
 
         return quizzes;
     }
-
 
 
 }

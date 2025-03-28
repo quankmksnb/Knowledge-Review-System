@@ -1,4 +1,4 @@
-<%--
+<%@ page import="models.User" %><%--
   Created by IntelliJ IDEA.
   User: Admin
   Date: 3/3/2025
@@ -20,122 +20,65 @@
     <!-- Bootstrap Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
           rel="stylesheet">
-
-    <style>
-        body {
-            background-color: #f4f6f9;
-        }
-
-        .sidebar {
-            background-color: #1a1f36;
-            min-height: 100vh;
-        }
-
-        .sidebar .nav-link {
-            color: #8b92a8;
-            padding: 0.8rem 1rem;
-            margin: 0.2rem 0;
-            border-radius: 6px;
-        }
-
-        .sidebar .nav-link:hover {
-            background-color: #2d3548;
-            color: #fff;
-        }
-
-        .header-bar {
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            padding: 15px;
-        }
-
-        .header-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        /* Card Styles */
-        .card-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            padding: 20px;
-        }
-
-        .card {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.15);
-        }
-
-        .card h3 {
-            font-size: 20px;
-            margin-bottom: 15px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .card p {
-            font-size: 14px;
-            color: #555;
-            max-height: 40px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            line-height: 1.5;
-        }
-
-        .card a {
-            font-size: 16px;
-            color: #007bff;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        .card a:hover {
-            color: #0056b3;
-        }
-
-        /* Semester Dropdown */
-        .semester-container {
-            display: flex;
-            align-items: center;
-            padding: 15px 20px;
-        }
-
-        .semester-container select {
-            width: auto;
-            min-width: 200px;
-            padding: 10px 15px;
-            font-size: 15px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-        }
-
-    </style>
+    <link rel="stylesheet" href="CSS/ClassStudent/classTeacherList.css">
 </head>
 <body>
 
 <div class="container-fluid">
     <div class="row">
+
+        <!-- Sidebar -->
+        <%
+            User user = (User) session.getAttribute("user");
+        %>
         <div class="col-auto px-0 sidebar d-none d-md-block">
             <div class="d-flex flex-column p-3">
                 <h5 class="text-white mb-4">AdminKit</h5>
                 <nav class="nav flex-column">
-                    <a class="nav-link" href="/home"><i class="bi bi-house"></i> Home</a>
-                    <a class="nav-link" href="/class_teacher"><i class="bi bi-people me-2"></i> Class</a>
+                    <!-- Home: Accessible to all roles -->
+                    <a class="nav-link" href="/admin"><i class="bi bi-house"></i> Home</a>
+
+                    <!-- User: Admin only -->
+                    <% if (user != null && user.getRoleId() == 1) { %>
+                    <a class="nav-link" href="/user"><i class="bi bi-person-circle"></i> User</a>
+                    <% } %>
+
+                    <!-- Subject: Admin and Subject Manager -->
+                    <% if (user != null && (user.getRoleId() == 1 || user.getRoleId() == 5)) { %>
+                    <a class="nav-link" href="/subject"><i class="bi bi-book"></i> Subject</a>
+                    <% } %>
+
+
+                    <!-- Class: Admin, Teacher, Training Manager, Subject Manager -->
+                    <% if (user != null && (user.getRoleId() == 2)) { %>
+                    <a class="nav-link" href="/class_teacher"><i class="bi bi-people"></i> Class</a>
+                    <% } %>
+
+                    <!-- Class: Admin, Training Manager, Subject Manager -->
+                    <% if (user != null && (user.getRoleId() == 1 || user.getRoleId() == 4 || user.getRoleId() == 5)) { %>
+                    <a class="nav-link" href="/class_management"><i class="bi bi-people"></i> Class</a>
+                    <% } %>
+
+                    <!-- Setting: Admin only -->
+                    <% if (user != null && user.getRoleId() == 1) { %>
+                    <a class="nav-link" href="/setting"><i class="bi bi-gear"></i> Setting</a>
+                    <% } %>
+
+                    <!-- Question: Admin and Subject Manager -->
+                    <% if (user != null && (user.getRoleId() == 1 || user.getRoleId() == 5)) { %>
+                    <a class="nav-link" href="question?action=choose"><i class="bi bi-question-octagon"></i> Question</a>
+                    <% } %>
+
+                    <!-- Term: Admin and Subject Manager -->
+                    <% if (user != null && (user.getRoleId() == 1 || user.getRoleId() == 5)) { %>
+                    <a class="nav-link" href="term?action=choose"><i class="bi bi-journal-text"></i> Term</a>
+                    <% } %>
+
+                    <a class="nav-link" href="/logout"><i class="bi bi-arrow-return-left"></i> Logout</a>
                 </nav>
             </div>
         </div>
+
         <div class="col p-0">
             <div class="header-bar d-flex justify-content-between align-items-center px-4">
                 <div class="d-flex align-items-center gap-3">
@@ -178,7 +121,7 @@
                         </p>
                         <div style="display: flex; justify-content: space-between; margin-top: 10px;">
                             <a href="class_student_detail?classId=${classList.id}">View Students</a>
-                            <a href="#">View Details</a>
+                            <a href="class-details?class-id=${classList.id}">View Details</a>
                         </div>
                     </div>
                 </c:forEach>

@@ -19,21 +19,19 @@ import models.User;
 import models.dao.LessonDAO;
 import models.dao.QuizDAO;
 import models.dao.SubjectDAO;
+import services.dataaccess.LessonService;
+import services.dataaccess.QuizService;
+import services.dataaccess.SubjectService;
 
 /**
  * @author Admin
  */
 @WebServlet(name = "QuizFilterController", urlPatterns = {"/my_quiz/filter"})
 public class QuizFilterController extends HttpServlet {
+    private final QuizService quizService = new QuizService();
+    private final LessonService lessonService = new LessonService();
+    private final SubjectService subjectService = new SubjectService();
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
-     *
-     * @param request  servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
-     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -81,25 +79,22 @@ public class QuizFilterController extends HttpServlet {
         Integer subjectId = (subjectIdStr != null && !subjectIdStr.isEmpty()) ? Integer.parseInt(subjectIdStr) : null;
         Integer lessonId = (lessonIdStr != null && !lessonIdStr.isEmpty()) ? Integer.parseInt(lessonIdStr) : null;
 
-        // Lấy danh sách quiz từ DAO
-        QuizDAO quizDAO = new QuizDAO();
-        List<Quiz> filteredQuizzes = quizDAO.filterQuizzes(user.getId(), subjectId, lessonId, status, quizName);
 
-        // Lấy danh sách bài học và subjects để trả về vào JSP (có thể dùng cho dropdown)
-        LessonDAO lessonDAO = new LessonDAO();
-        List<Lesson> lessons = lessonDAO.getLessonsByUserId(user.getId());
-        SubjectDAO subjectDAO = new SubjectDAO();
-        List<Subject> subjects = subjectDAO.getSubjectsByUserId(user.getId());
+        List<Quiz> filteredQuizzes = quizService.filterQuizzes(user.getId(), subjectId, lessonId, status, quizName);
+
+        List<Lesson> lessons = lessonService.getLessonsByUserId(user.getId());
+
+        List<Subject> subjects = subjectService.getSubjectsByUserId(user.getId());
 
         // Tạo map để chứa quizId → lessonId và quizId → lessonTitle
         Map<Integer, String> quizLessonTitleMap = new HashMap<>();
         Map<Integer, Integer> quizLessonIdMap = new HashMap<>();
 
         for (Quiz quiz : filteredQuizzes) {
-            String lessonTitle = lessonDAO.getLessonTitleByQuizId(quiz.getId());
+            String lessonTitle = lessonService.getLessonTitleByQuizId(quiz.getId());
             quizLessonTitleMap.put(quiz.getId(), lessonTitle);
 
-            Integer lessonIdFromMap = lessonDAO.getLessonIdByQuizId(quiz.getId());
+            Integer lessonIdFromMap = lessonService.getLessonIdByQuizId(quiz.getId());
             quizLessonIdMap.put(quiz.getId(), lessonIdFromMap);
         }
 
@@ -136,10 +131,10 @@ public class QuizFilterController extends HttpServlet {
                 out.println("<a href='quiz_result?id=" + quiz.getId() + "' class='btn btn-sm btn-success' title='Review Quiz'>" +
                         "<i class='bi bi-file-earmark-text-fill'></i> Review Quiz</a>");
             } else {
-                out.println("<a href='take_quiz?id=" + quiz.getId() + "' class='btn btn-sm btn-primary' title='Start Quiz'>" +
+                out.println("<a href='take_quiz?quizId=" + quiz.getId() + "' class='btn btn-sm btn-primary' title='Start Quiz'>" +
                         "<i class='bi bi-play-circle-fill'></i> Start</a>");
 
-                out.println("<a href='quiz_detail?id=" + quiz.getId() + "' class='btn btn-sm btn-primary' title='Quiz Detail'>" +
+                out.println("<a href='quiz_detail?quizId=" + quiz.getId() + "' class='btn btn-sm btn-primary' title='Quiz Detail'>" +
                         "<i class='bi bi-pencil-square'></i> Details</a>");
 
             }

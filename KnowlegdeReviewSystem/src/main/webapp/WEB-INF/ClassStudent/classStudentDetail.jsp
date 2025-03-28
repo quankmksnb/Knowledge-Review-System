@@ -1,4 +1,4 @@
-<%--
+<%@ page import="models.User" %><%--
   Created by IntelliJ IDEA.
   User: Admin
   Date: 3/3/2025
@@ -16,208 +16,11 @@
     <title>Class Detail</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <!-- Bootstrap Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
           rel="stylesheet">
-
-    <style>
-        body {
-            background-color: #f4f6f9;
-        }
-
-        .sidebar {
-            background-color: #1a1f36;
-            min-height: 100vh;
-        }
-
-        .sidebar .nav-link {
-            color: #8b92a8;
-            padding: 0.8rem 1rem;
-            margin: 0.2rem 0;
-            border-radius: 6px;
-        }
-
-        .sidebar .nav-link:hover {
-            background-color: #2d3548;
-            color: #fff;
-        }
-
-        .header-bar {
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            padding: 15px;
-        }
-
-        .header-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .btn-primary,
-        .btn-success,
-        .btn-secondary {
-            border-radius: 8px;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-            border-color: #004085;
-        }
-
-        .class-table {
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            width: 100%;
-        }
-
-        .class-table th,
-        .class-table td {
-            text-align: center;
-            padding: 15px;
-            border: none;
-        }
-
-        .class-table th {
-            background-color: #f8f9fa;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .class-table tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        .class-table tr:hover {
-            background-color: #eef1f5;
-        }
-
-        /* Modal căn chỉnh */
-        .modal-dialog {
-            max-width: 50vw;
-        }
-
-        .modal-content,
-        .modal-body,
-        .modal-header,
-        .modal-dialog {
-            box-sizing: content-box !important;
-        }
-
-
-        .modal-content {
-            background-color: #2f3b52;
-            border-radius: 12px;
-            padding: 20px;
-            border: none !important;
-            outline: none !important;
-            box-shadow: none !important;
-            border-style: none !important;
-        }
-
-        .modal-header {
-            background-color: #2f3b52;
-            color: white;
-            border-bottom: none;
-            padding: 15px;
-            border-radius: 12px 12px 0 0;
-        }
-
-        .modal-header .btn-close {
-            background-color: white;
-            border-radius: 100%;
-        }
-
-        .modal-body {
-            background-color: #2f3b52;
-            color: #ffffff;
-            border-radius: 10px;
-        }
-
-        /* Bảng trong modal */
-        .modal-body table {
-            background-color: transparent;
-            color: white;
-            width: 100%;
-            border-radius: 8px;
-        }
-
-        .modal-body thead {
-            background-color: #324968;
-            color: #ffffff;
-            padding: 12px;
-            border-radius: 5px;
-        }
-
-        /* Căn chỉnh bảng */
-        .modal-body td {
-            padding: 12px;
-            vertical-align: middle;
-            text-align: center;
-        }
-
-        /* Căn giữa các nút */
-        .modal-body .d-flex {
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .modal-body .btn-success,
-        .modal-body .btn-danger {
-            padding: 6px 12px;
-            font-size: 14px;
-            font-weight: bold;
-            border-radius: 6px;
-            transition: all 0.3s ease-in-out;
-        }
-
-        .modal-body .btn-success:hover {
-            background-color: #28a745;
-            transform: scale(1.05);
-        }
-
-        .modal-body .btn-danger:hover {
-            background-color: #dc3545;
-            transform: scale(1.05);
-        }
-
-        .popup {
-            background-color: #3e4a67;
-            color: white;
-            border: 1px solid #4d5b75;
-            border-radius: 8px;
-            padding: 0.8rem;
-        }
-
-        .popup:focus {
-            background-color: #4a5b72;
-            border-color: #007bff;
-            color: white;
-        }
-
-        .form-control[readonly] {
-            background-color: transparent !important; /* Xóa màu nền */
-        }
-
-
-        .student-img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 1px solid #ddd;
-            display: block;
-            margin: auto;
-        }
-        tbody, td, tfoot, th, thead, tr{
-            border-style: none;
-        }
-    </style>
+    <link rel="stylesheet" href="CSS/ClassStudent/classStudentDetail.css">
 </head>
 
 <body>
@@ -240,15 +43,58 @@
     </div>
 
     <div class="row">
+        <!-- Sidebar -->
+        <%
+            User user = (User) session.getAttribute("user");
+        %>
         <div class="col-auto px-0 sidebar d-none d-md-block">
             <div class="d-flex flex-column p-3">
                 <h5 class="text-white mb-4">AdminKit</h5>
                 <nav class="nav flex-column">
-                    <a class="nav-link" href="/home"><i class="bi bi-house"></i> Home</a>
-                    <a class="nav-link" href="/class_teacher"><i class="bi bi-people me-2"></i> Class</a>
+                    <!-- Home: Accessible to all roles -->
+                    <a class="nav-link" href="/admin"><i class="bi bi-house"></i> Home</a>
+
+                    <!-- User: Admin only -->
+                    <% if (user != null && user.getRoleId() == 1) { %>
+                    <a class="nav-link" href="/user"><i class="bi bi-person-circle"></i> User</a>
+                    <% } %>
+
+                    <!-- Subject: Admin and Subject Manager -->
+                    <% if (user != null && (user.getRoleId() == 1 || user.getRoleId() == 5)) { %>
+                    <a class="nav-link" href="/subject"><i class="bi bi-book"></i> Subject</a>
+                    <% } %>
+
+
+                    <!-- Class: Admin, Teacher, Training Manager, Subject Manager -->
+                    <% if (user != null && (user.getRoleId() == 2)) { %>
+                    <a class="nav-link" href="/class_teacher"><i class="bi bi-people"></i> Class</a>
+                    <% } %>
+
+                    <!-- Class: Admin, Training Manager, Subject Manager -->
+                    <% if (user != null && (user.getRoleId() == 1 || user.getRoleId() == 4 || user.getRoleId() == 5)) { %>
+                    <a class="nav-link" href="/class_management"><i class="bi bi-people"></i> Class</a>
+                    <% } %>
+
+                    <!-- Setting: Admin only -->
+                    <% if (user != null && user.getRoleId() == 1) { %>
+                    <a class="nav-link" href="/setting"><i class="bi bi-gear"></i> Setting</a>
+                    <% } %>
+
+                    <!-- Question: Admin and Subject Manager -->
+                    <% if (user != null && (user.getRoleId() == 1 || user.getRoleId() == 5)) { %>
+                    <a class="nav-link" href="question?action=choose"><i class="bi bi-question-octagon"></i> Question</a>
+                    <% } %>
+
+                    <!-- Term: Admin and Subject Manager -->
+                    <% if (user != null && (user.getRoleId() == 1 || user.getRoleId() == 5)) { %>
+                    <a class="nav-link" href="term?action=choose"><i class="bi bi-journal-text"></i> Term</a>
+                    <% } %>
+
+                    <a class="nav-link" href="/logout"><i class="bi bi-arrow-return-left"></i> Logout</a>
                 </nav>
             </div>
         </div>
+
         <div class="col p-0">
             <div class="header-bar d-flex justify-content-between align-items-center px-4">
                 <div class="d-flex align-items-center gap-3">

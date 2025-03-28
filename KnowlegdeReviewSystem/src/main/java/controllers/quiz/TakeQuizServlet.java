@@ -18,7 +18,7 @@ import java.util.List;
 @WebServlet("/take_quiz")
 public class TakeQuizServlet extends HttpServlet {
     private QuizDAO quizDAO;
-    private dao.QuizQuestionDAO quizQuestionDAO;
+    private models.dao.QuizQuestionDAO quizQuestionDAO;
     private QuestionDAO questionDAO;
     private QuizResultDAO quizResultDAO;
     private QuizAnswerDAO quizAnswerDAO; // Added QuizAnswerDAO
@@ -26,7 +26,7 @@ public class TakeQuizServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         quizDAO = new QuizDAO();
-        quizQuestionDAO = new dao.QuizQuestionDAO();
+        quizQuestionDAO = new models.dao.QuizQuestionDAO();
         questionDAO = new QuestionDAO();
         quizResultDAO = new QuizResultDAO();
         quizAnswerDAO = new QuizAnswerDAO(); // Initialize QuizAnswerDAO

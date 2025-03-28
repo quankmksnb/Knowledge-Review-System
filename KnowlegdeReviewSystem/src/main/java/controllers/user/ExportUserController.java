@@ -19,12 +19,16 @@ import models.dao.SettingDAO;
 import models.dao.UserDAO;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import services.dataaccess.SettingService;
+import services.dataaccess.UserService;
 
 /**
  * @author Admin
  */
 @WebServlet(name = "ExportUserController", urlPatterns = {"/user/export"})
 public class ExportUserController extends HttpServlet {
+    private final UserService userService = new UserService();
+    private final SettingService settingService = new SettingService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -42,11 +46,8 @@ public class ExportUserController extends HttpServlet {
             cell.setCellStyle(getHeaderCellStyle(workbook)); // Hàm giúp in đậm dòng đầu
         }
 
-        UserDAO userDAO = new UserDAO();
-        SettingDAO settingDAO = new SettingDAO();
-
-        List<User> userListAll = userDAO.findAll();
-        List<Setting> roles = settingDAO.findAllByType(SettingType.Role);
+        List<User> userListAll = userService.findAll();
+        List<Setting> roles = settingService.findAllByType(SettingType.Role);
 
         // Ánh xạ roleId -> roleName
         Map<Integer, String> roleMap = roles.stream()

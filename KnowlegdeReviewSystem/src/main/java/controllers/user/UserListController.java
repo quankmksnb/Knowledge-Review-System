@@ -20,45 +20,55 @@ import models.User;
 import models.UserStatus;
 import models.dao.SettingDAO;
 import models.dao.UserDAO;
+import services.dataaccess.SettingService;
+import services.dataaccess.UserService;
 
 /**
  * @author Admin
  */
 @WebServlet(name = "UserListController", urlPatterns = {"/user"})
 public class UserListController extends HttpServlet {
+    private final UserService userService = new UserService();
+    private final SettingService settingService = new SettingService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        //request.setCharacterEncoding("UTF-8");  // hỗ trọ tiếng việt
-        UserDAO userDAO = new UserDAO();
-        SettingDAO settingDAO = new SettingDAO();
-        List<User> users = userDAO.findAll();
-        List<Setting> settings = settingDAO.findAllByType(SettingType.Role);
+        List<Setting> settings = settingService.findAllByType(SettingType.Role);
 
+        // Lấy danh sách tất cả người dùng
+        List<User> users = userService.findAll();
 
-        // Tạo map để lưu roleId và title tương ứng
+        // Phân trang: mỗi trang 8 người dùng
+        int currentPage = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
+        int itemsPerPage = 8;  // Số người dùng mỗi trang
+        int totalItems = users.size();
+        int totalPages = (int) Math.ceil((double) totalItems / itemsPerPage);
+
+        // Tính chỉ số bắt đầu và kết thúc cho trang hiện tại
+        int startIndex = (currentPage - 1) * itemsPerPage;
+        int endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+
+        // Lấy danh sách người dùng cho trang hiện tại
+        List<User> paginatedUsers = users.subList(startIndex, endIndex);
+
+        // Tạo map để ánh xạ roleId và title tương ứng
         Map<Integer, String> roleMap = new HashMap<>();
-
-        for (User user : users) {
+        for (User user : paginatedUsers) {
             if (!roleMap.containsKey(user.getRoleId())) {
-                Setting role = settingDAO.findById(user.getRoleId());
-                if (role != null) {
-                    roleMap.put(user.getRoleId(), role.getTitle());
-                } else {
-                    roleMap.put(user.getRoleId(), "Unknown");
-                }
+                Setting role = settingService.findById(user.getRoleId());
+                roleMap.put(user.getRoleId(), role != null ? role.getTitle() : "Unknown");
             }
         }
 
-        String action = request.getParameter("action");
+        // Truyền các thuộc tính vào request
+        request.setAttribute("users", paginatedUsers);
+        request.setAttribute("roleMap", roleMap);
+        request.setAttribute("settings", settings);
+        request.setAttribute("currentPage", currentPage);
+        request.setAttribute("totalPages", totalPages);
 
-        if (action == null) {
-            request.setAttribute("users", users);
-            request.setAttribute("roleMap", roleMap);
-            request.setAttribute("settings", settings);
-            request.getRequestDispatcher("WEB-INF/Admin/UserManagement/userList.jsp").forward(request, response);
-        }
+        request.getRequestDispatcher("WEB-INF/Admin/UserManagement/userList.jsp").forward(request, response);
     }
 
     @Override
@@ -70,7 +80,6 @@ public class UserListController extends HttpServlet {
         String fullname = request.getParameter("fullname");
         int roleId = Integer.parseInt(request.getParameter("role"));
 
-        UserDAO userDAO = new UserDAO();
 //        boolean emailExists = userDAO.isEmailExists(email);
 //        boolean usernameExists = userDAO.isUsernameExists(username);
 
@@ -87,7 +96,7 @@ public class UserListController extends HttpServlet {
         user.setPasswordHash(StringEncoder.encodePassword(randomPassword));
 
 
-        userDAO.create(user);
+        userService.create(user);
 
         // Gửi email cho người dùng với mật khẩu ngẫu nhiên
         String subject = "[Knowledge Review System] Account Creation - Your Temporary Password";

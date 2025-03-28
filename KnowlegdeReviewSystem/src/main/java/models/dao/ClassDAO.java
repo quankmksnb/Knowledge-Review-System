@@ -14,8 +14,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ClassDAO implements DAO<Class> {
-    //region DAO
-    //TODO: Implement logic for DAO
 
     Connection connection = DatabaseConnector.getConnection();
     private static final Logger LOGGER = Logger.getLogger(UserDAO.class.getName());
@@ -61,8 +59,22 @@ public class ClassDAO implements DAO<Class> {
     @Override
     public void update(Class aClass) {
         PreparedStatement ps = null;
+        ResultSet rs = null;
+
         try {
-            String sql = "UPDATE krsdb.class " +
+            // Bước 1: Lấy ID của giáo viên cũ (manager cũ)
+            String getOldManagerSql = "SELECT manager_id FROM krsdb.class WHERE id = ?";
+            ps = connection.prepareStatement(getOldManagerSql);
+            ps.setInt(1, aClass.getId());  // Lấy manager_id của lớp học cũ
+            rs = ps.executeQuery();
+
+            int oldManagerId = -1;
+            if (rs.next()) {
+                oldManagerId = rs.getInt("manager_id");
+            }
+
+            // Bước 2: Cập nhật thông tin lớp học
+            String updateClassSql = "UPDATE krsdb.class " +
                     "SET class_name = ?, " +
                     "code = ?, " +
                     "subject_id = ?, " +
@@ -71,18 +83,36 @@ public class ClassDAO implements DAO<Class> {
                     "modified_at = NOW() " +
                     "WHERE id = ?";
 
-            ps = connection.prepareStatement(sql);
+            ps = connection.prepareStatement(updateClassSql);
 
             // Set các tham số từ đối tượng Class
             ps.setString(1, aClass.getClassName());
             ps.setString(2, aClass.getCode());
             ps.setInt(3, aClass.getSubjectId());
-            ps.setInt(4, aClass.getManagerId());
+            ps.setInt(4, aClass.getManagerId());  // Giáo viên mới
             ps.setString(5, aClass.getStatus().toString());
             ps.setInt(6, aClass.getId());
 
-            ps.executeUpdate();  // Thực hiện cập nhật vào cơ sở dữ liệu
-            System.out.println("thành công");
+            ps.executeUpdate();  // Thực hiện cập nhật thông tin lớp học
+
+            // Bước 3: Xóa bản ghi trong bảng class_student với giáo viên cũ (oldManagerId)
+            if (oldManagerId != -1) {
+                String deleteClassStudentSql = "DELETE FROM krsdb.class_student WHERE class_id = ? AND user_id = ?";
+                ps = connection.prepareStatement(deleteClassStudentSql);
+                ps.setInt(1, aClass.getId());  // class_id là lớp học đang update
+                ps.setInt(2, oldManagerId);  // user_id là giáo viên cũ
+                ps.executeUpdate();  // Thực hiện xóa bản ghi
+            }
+
+            // Bước 4: Thêm bản ghi mới vào bảng class_student với giáo viên mới
+            String insertClassStudentSql = "INSERT INTO krsdb.class_student (class_id, user_id, status, modified_at) " +
+                    "VALUES (?, ?, 'Approved', NOW())";
+            ps = connection.prepareStatement(insertClassStudentSql);
+            ps.setInt(1, aClass.getId());  // class_id là lớp học mới cập nhật
+            ps.setInt(2, aClass.getManagerId());  // user_id là giáo viên mới
+            ps.executeUpdate();  // Thực hiện thêm bản ghi mới vào bảng class_student
+
+            System.out.println("Cập nhật thành công và thay đổi giáo viên!");
 
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, "Error updating class", ex);
@@ -91,8 +121,11 @@ public class ClassDAO implements DAO<Class> {
                 if (ps != null) {
                     ps.close();
                 }
+                if (rs != null) {
+                    rs.close();
+                }
             } catch (SQLException ex) {
-                LOGGER.log(Level.SEVERE, "Error closing prepared statement", ex);
+                LOGGER.log(Level.SEVERE, "Error closing resources", ex);
             }
         }
     }
@@ -214,7 +247,6 @@ public class ClassDAO implements DAO<Class> {
         return aClass;
     }
 
-
     public List<Class> findClassesByStudentId(int studentId) {
         List<Class> classList = new ArrayList<>();
         String sql = "SELECT c.* FROM krsdb.class c " +
@@ -236,7 +268,7 @@ public class ClassDAO implements DAO<Class> {
         return classList;
     }
 
-    // thực hiện sau khi tạo class mới thì add teacher được ủy quyền vào luôn class_student
+
     public Class getClassByCriteria(String code, int subjectId, int managerId, int semesterId, String className) {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -324,7 +356,6 @@ public class ClassDAO implements DAO<Class> {
         return null; // Return null if not found or error occurs
     }
 
-
     public void enrollStudent(int studentId, int classId) {
         String sql = "INSERT INTO class_student (class_id, user_id, status, modified_at) VALUES (?, ?, 'Unapproved', NOW())";
 
@@ -342,7 +373,6 @@ public class ClassDAO implements DAO<Class> {
             e.printStackTrace();
         }
     }
-
 
     public List<Class> searchClasses(String keyword, int limit) {
         List<Class> classList = new ArrayList<>();
@@ -802,7 +832,6 @@ public class ClassDAO implements DAO<Class> {
         return newStatus; // Trả về trạng thái mới
     }
 
-
     public ClassInfo getClassInfo(int classId) {
         ClassInfo classInfo = null;
         PreparedStatement ps = null;
@@ -833,7 +862,7 @@ public class ClassDAO implements DAO<Class> {
                     "    `lesson` l ON lc.lesson_id = l.id " +
                     "WHERE " +
                     "    c.subject_id = ? " +
-                    "    AND c.type_id = 13 " +
+                    "    AND c.type_id = 8 " +
                     "ORDER BY " +
                     "    c.id, l.id";
 
@@ -920,8 +949,4 @@ public class ClassDAO implements DAO<Class> {
         return enrolledSubjects;
     }
 
-//    public static void main(String[] args) {
-//        ClassDAO dao = new ClassDAO();
-//        System.out.println(dao.findByManagerId(2));
-//    }
 }

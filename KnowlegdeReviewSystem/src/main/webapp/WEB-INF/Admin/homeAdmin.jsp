@@ -1,4 +1,4 @@
-<%--
+<%@ page import="models.User" %><%--
   Created by IntelliJ IDEA.
   User: Admin
   Date: 2/5/2025
@@ -40,25 +40,78 @@
 </head>
 <body>
 
-<div class="container-fluid">
-    <div class="row">
+
         <!-- Sidebar -->
+        <%
+            User user = (User) session.getAttribute("user");
+        %>
         <div class="col-auto px-0 sidebar d-none d-md-block">
             <div class="d-flex flex-column p-3">
                 <h5 class="text-white mb-4">AdminKit</h5>
                 <nav class="nav flex-column">
-                    <a class="nav-link" href="/home"><i class="bi bi-house"></i> Home</a>
-                    <a class="nav-link" href="/user"><i class="bi bi-person-circle"></i> User</a>
-                    <a class="nav-link" href="/subject"><i class="bi bi-book"></i> Subject</a>
-                    <a class="nav-link" href="/class_management"><i class="bi bi-people"></i> Class</a>
-                    <a class="nav-link" href="/setting"><i class="bi bi-gear"></i> Setting</a>
-                    <a class="nav-link" href="question?action=choose"><i class="bi bi-question-octagon"></i>Question</a>
+                    <!-- Home: Accessible to all roles -->
+                    <a class="nav-link" href="/admin"><i class="bi bi-house"></i> Home</a>
 
+                    <!-- User: Admin only -->
+                    <% if (user != null && user.getRoleId() == 1) { %>
+                    <a class="nav-link" href="/user"><i class="bi bi-person-circle"></i> User</a>
+                    <% } %>
+
+                    <!-- Subject: Admin and Subject Manager -->
+                    <% if (user != null && (user.getRoleId() == 1 || user.getRoleId() == 5)) { %>
+                    <a class="nav-link" href="/subject"><i class="bi bi-book"></i> Subject</a>
+                    <% } %>
+
+
+                    <!-- Class: Admin, Teacher, Training Manager, Subject Manager -->
+                    <% if (user != null && (user.getRoleId() == 2)) { %>
+                        <a class="nav-link" href="/class_teacher"><i class="bi bi-people"></i> Class</a>
+                    <% } %>
+
+                    <!-- Class: Admin, Training Manager, Subject Manager -->
+                    <% if (user != null && (user.getRoleId() == 1 || user.getRoleId() == 4 || user.getRoleId() == 5)) { %>
+                    <a class="nav-link" href="/class_management"><i class="bi bi-people"></i> Class</a>
+                    <% } %>
+
+                    <!-- Setting: Admin only -->
+                    <% if (user != null && user.getRoleId() == 1) { %>
+                    <a class="nav-link" href="/setting"><i class="bi bi-gear"></i> Setting</a>
+                    <% } %>
+
+                    <!-- Question: Admin and Subject Manager -->
+                    <% if (user != null && (user.getRoleId() == 1 || user.getRoleId() == 5)) { %>
+                    <a class="nav-link" href="question?action=choose"><i class="bi bi-question-octagon"></i> Question</a>
+                    <% } %>
+
+                    <!-- Term: Admin and Subject Manager -->
+                    <% if (user != null && (user.getRoleId() == 1 || user.getRoleId() == 5)) { %>
+                    <a class="nav-link" href="term?action=choose"><i class="bi bi-journal-text"></i> Term</a>
+                    <% } %>
+
+                    <a class="nav-link" href="/logout"><i class="bi bi-arrow-return-left"></i> Logout</a>
                 </nav>
             </div>
         </div>
-    </div>
-</div>
 
 </body>
+
+<script>
+    function logout() {
+        fetch('/logout', {
+            method: 'GET',
+            credentials: 'same-origin',
+        })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = 'login';
+                } else {
+                    alert('Error logging out. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error logging out. Please try again.');
+            });
+    }
+</script>
 </html>

@@ -14,26 +14,28 @@ import models.SettingType;
 import models.User;
 import models.dao.SettingDAO;
 import models.dao.UserDAO;
+import services.dataaccess.SettingService;
+import services.dataaccess.UserService;
 
 /**
  * @author Admin
  */
 @WebServlet(name = "UserUpdateController", urlPatterns = {"/user_update"})
 public class UserUpdateController extends HttpServlet {
+    private final UserService userService = new UserService();
+    private final SettingService settingService = new SettingService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         String id = request.getParameter("id");
-        UserDAO userDAO = new UserDAO();
-        SettingDAO settingDAO = new SettingDAO();
 
         // Lấy thông tin User cần cập nhật
-        User oldUser = userDAO.findById(Integer.parseInt(id));
+        User oldUser = userService.findById(Integer.parseInt(id));
 
         // Lấy danh sách Role từ Setting
-        List<Setting> settings = settingDAO.findAllByType(SettingType.Role);
+        List<Setting> settings = settingService.findAllByType(SettingType.Role);
 
         request.setAttribute("oldUser", oldUser);
         request.setAttribute("settings", settings); // Truyền danh sách Role sang JSP
@@ -59,11 +61,9 @@ public class UserUpdateController extends HttpServlet {
         user.setModifiedAt(new java.util.Date(System.currentTimeMillis()));
 
         // Cập nhật thông tin người dùng
-        UserDAO userDAO = new UserDAO();
-        userDAO.update(user);
+        userService.update(user);
 
         request.getSession().setAttribute("message", "User updated successfully");
-        // Chuyển hướng về danh sách người dùng sau khi cập nhật thành công
         response.sendRedirect("user");
     }
 

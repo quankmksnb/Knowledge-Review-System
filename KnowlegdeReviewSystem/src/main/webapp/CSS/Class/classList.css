@@ -1,0 +1,201 @@
+body {
+    background-color: #f4f6f9;
+}
+
+.sidebar {
+    background-color: #1a1f36;
+    min-height: 100vh;
+}
+
+.sidebar .nav-link {
+    color: #8b92a8;
+    padding: 0.8rem 1rem;
+    margin: 0.2rem 0;
+    border-radius: 6px;
+}
+
+.sidebar .nav-link:hover {
+    background-color: #2d3548;
+    color: #fff;
+}
+
+.header-bar {
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+}
+
+.header-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.search-input {
+    background-color: #f8f9fa;
+    border: none;
+    padding-left: 2.5rem;
+    border-radius: 8px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+}
+
+.class-table {
+    margin: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.class-table th, .class-table td {
+    text-align: center;
+    padding: 15px;
+    border: none;
+}
+
+.class-table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.class-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.class-table tr:hover {
+    background-color: #eef1f5;
+}
+
+.btn-primary {
+    border-radius: 8px;
+}
+
+.btn-success {
+    border-radius: 8px;
+}
+
+.modal-content {
+    background-color: #2f3b52; /* Màu nền tối */
+    border-radius: 12px; /* Cạnh bo tròn */
+    padding: 30px;
+}
+
+.modal-header {
+    background-color: #2f3b52; /* Màu nền header tối */
+    color: white;
+    border-bottom: none;
+}
+
+.modal-header .btn-close {
+    background-color: white;
+    border-radius: 100%;
+    color: white;
+}
+
+.modal-header .btn-close:hover {
+    color: #0056b3; /* Màu khi hover */
+}
+
+.modal-body {
+    background-color: #2f3b52;
+    color: #ffffff;
+}
+
+
+.popup {
+    background-color: #3e4a67; /* Nền các input */
+    color: white;
+    border: 1px solid #4d5b75; /* Viền nhẹ */
+    border-radius: 8px;
+    padding: 0.8rem;
+}
+
+.popup:focus {
+    background-color: #4a5b72; /* Nền khi focus */
+    border-color: #007bff;
+    color: white;
+}
+
+.btn-primary {
+    background-color: #007bff; /* Màu nút chính */
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+}
+
+.text-danger {
+    color: #ff4d4d;
+}
+
+input, select {
+    border-radius: 8px;
+}
+
+.small-dropdown {
+    width: 120px;
+    height: 30px;
+    font-size: 14px;
+    padding: 2px 8px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+    gap: 5px;
+}
+
+.pagination-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1060;
+
+}
+
+.custom-toast .toast-header {
+    color: white;
+    background-color: green;
+}
+.custom-toast {
+    min-width: 250px;
+}
+
+.pagination-item:hover {
+    background-color: #f1f1f1;
+}
+
+.pagination-item.active {
+    background-color: #0d6efd;
+    color: white;
+    border-color: #0d6efd;
+}
+
+.pagination-item.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

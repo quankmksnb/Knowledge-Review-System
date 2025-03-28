@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpSession;
 import models.User;
 import models.dao.ClassDAO;
 import models.dao.ClassInfo;
+import services.dataaccess.ClassService;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -29,8 +30,9 @@ public class ClassServlet extends HttpServlet {
 
         LOGGER.info(path);
 
-        HttpSession session = request.getSession();
+        HttpSession session = request.getSession(false);
         User user = (User) session.getAttribute("user");
+        ClassService classService = new ClassService();
 
         if (user == null) {
             response.sendRedirect("/login");
@@ -38,7 +40,14 @@ public class ClassServlet extends HttpServlet {
 
         switch (path) {
             case "/class-details":
-                request.getRequestDispatcher("WEB-INF/Web/classDetails.jsp").forward(request, response);
+
+                int classId = Integer.parseInt(request.getParameter("class-id"));
+                if (user.getRoleId() == 3 && !classService.isStudentApprovedInClass(user.getId(), classId)) {
+                    response.sendRedirect("/error");
+                    return;
+                }
+
+                getClassDetails(request, response);
                 break;
             case "/class-info":
                 getClassInfo(request, response);
@@ -52,6 +61,12 @@ public class ClassServlet extends HttpServlet {
         String path = request.getServletPath();
         LOGGER.info(path);
         // Add POST logic if needed
+    }
+
+    private void getClassDetails(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+
+
+        request.getRequestDispatcher("WEB-INF/Web/classDetails.jsp").forward(request, response);
     }
 
     private void getClassInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -68,8 +83,8 @@ public class ClassServlet extends HttpServlet {
             return;
         }
 
-        ClassDAO classDAO = new ClassDAO();
-        ClassInfo classInfo = classDAO.getClassInfo(classId);
+        ClassService classService = new ClassService();
+        ClassInfo classInfo = classService.getClassInfo(classId);
 
         if (classInfo == null) {
             response.getWriter().write("{\"error\": \"Class not found or database error\"}");

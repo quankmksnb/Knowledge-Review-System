@@ -1,0 +1,81 @@
+body {
+    background-color: #f4f6f9;
+}
+
+.sidebar {
+    background-color: #1a1f36;
+    min-height: 100vh;
+}
+
+.sidebar .nav-link {
+    color: #8b92a8;
+    padding: 0.8rem 1rem;
+    margin: 0.2rem 0;
+    border-radius: 6px;
+}
+
+.sidebar .nav-link:hover {
+    background-color: #2d3548;
+    color: #fff;
+}
+
+.header-bar {
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.form-container {
+    margin: 20px auto 40px;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 900px;
+}
+
+.form-control {
+    background-color: #d9edf7;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.form-select {
+    background-color: #d9edf7;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.btn-primary {
+    background-color: blue;
+    color: white;
+    border-radius: 8px;
+    padding: 10px 20px;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: darkblue;
+}
+
+.row .col-md-6 {
+    margin-bottom: 25px;
+}
+
+.form-check-input {
+    margin-right: 10px;
+}
+
+.container-box {
+    margin-bottom: 20px;
+}
+
+.nav-tabs .nav-link.active {
+    font-weight: bold;
+}

@@ -22,7 +22,7 @@ public class DatabaseConnector {
             // Establish the connection
             connection = DriverManager.getConnection(url, username, password);
 
-            LOGGER.info("Connected to the database successfully!");
+            //LOGGER.info("Connected to the database successfully!");
         } catch (ClassNotFoundException e) {
             LOGGER.severe("JDBC Driver not found: " + e.getMessage());
         } catch (SQLException e) {

@@ -1,5 +1,7 @@
 <%@ page import="models.dao.DTOSubject" %>
-<%@ page import="java.util.List" %><%--
+<%@ page import="java.util.List" %>
+<%@ page import="models.User" %>
+<%@ page import="java.util.HashMap" %><%--
   Created by IntelliJ IDEA.
   User: PC
   Date: 3/17/2025
@@ -104,33 +106,39 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
       rel="stylesheet">
 <body>
+
 <div class="container-fluid">
     <div class="row">
-        <!-- Sidebar -->
-        <div class="col-auto px-0 sidebar d-none d-md-block">
-            <div class="d-flex flex-column p-3">
-                <h5 class="text-white mb-4">AdminKit</h5>
-                <nav class="nav flex-column">
-                    <a class="nav-link" href="/home"><i class="bi bi-house"></i> Home</a>
-                    <a class="nav-link" href="/user"><i class="bi bi-person-circle"></i> User</a>
-                    <a class="nav-link" href="/subject"><i class="bi bi-book"></i> Subject</a>
-                    <a class="nav-link" href="/class_management"><i class="bi bi-people"></i> Class</a>
-                    <a class="nav-link" href="/setting"><i class="bi bi-gear"></i> Setting</a>
-                    <a class="nav-link" href="question?action=choose"><i class="bi bi-question-octagon"></i>Question</a>
-                </nav>
-            </div>
-        </div>
+        <jsp:include page="../Admin/homeAdmin.jsp"></jsp:include>
 
         <!-- Main Content -->
         <div class="col p-0">
             <!-- Header Bar -->
             <div class="header-bar d-flex justify-content-between align-items-center px-4">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="header-title">Choose the subject</div>
+                    <div class="header-title">Choose the subject
+                        <br>
+                        <a class="btn btn-sm btn-primary"
+                           href="question?action=choose">
+                            <i class="bi bi-arrow-return-left"></i>
+                            All subject
+                        </a></div>
                     <div class="position-relative">
-                        <i class="bi bi-search search-icon"></i>
-                        <input type="text" id="searchInput" class="form-control search-input"
-                               placeholder="Search subjects...">
+                        <form action="question">
+                            <input type="hidden" name="action" value="choose">
+                            <label for="searchInput">Subject Name:</label><input name="subjectName" type="text" id="searchInput" class="form-control search-input" placeholder="Search subjects...">
+                            <button style="opacity: 0;" type="submit"></button>
+                        </form>
+                    </div>
+                    <div class="ms-3">
+                        <select name="domain" id="domain" class="form-select">
+                            <option value="all">All Domains</option>
+                            <% HashMap<Integer, String> map = (HashMap<Integer, String>) request.getAttribute("map");
+                                for (HashMap.Entry<Integer, String> entry : map.entrySet()) { %>
+                            <option value="<%= entry.getKey() %>"><%= entry.getValue() %>
+                            </option>
+                            <% } %>
+                        </select>
                     </div>
 
                 </div>
@@ -180,10 +188,23 @@
         </div>
     </div>
 </div>
-<style>
-    footer {
-        position: relative;
+<jsp:include page="../Web/footer.jsp"></jsp:include>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+    const domainSelect = document.getElementById('domain');
+
+    function performSearch() {
+        const selectedDomain = domainSelect.value;
+        const url = `question?action=choose&domain=${selectedDomain}`;
+        window.location.href = url;
     }
-</style>
+
+
+
+    domainSelect.addEventListener('change', function () {
+        performSearch();
+    });
+</script>
 </body>
 </html>

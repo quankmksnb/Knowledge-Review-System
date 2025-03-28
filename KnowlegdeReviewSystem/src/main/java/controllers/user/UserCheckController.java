@@ -9,12 +9,14 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import models.dao.UserDAO;
+import services.dataaccess.UserService;
 
 /**
  * @author Admin
  */
 @WebServlet(name = "UserCheckController", urlPatterns = {"/user/checkUserExists", "/user/checkManagerRole"})
 public class UserCheckController extends HttpServlet {
+    private final UserService userService = new UserService();
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -25,14 +27,13 @@ public class UserCheckController extends HttpServlet {
         String username = request.getParameter("username");
         String manager = request.getParameter("manager");
         String path = request.getServletPath();
-        UserDAO userDAO = new UserDAO();
 
         PrintWriter out = response.getWriter();
 
         if (email != null || username != null) {
             // Kiểm tra email và username đã tồn tại hay chưa
-            boolean emailExists = email != null && userDAO.isEmailExists(email);
-            boolean usernameExists = username != null && userDAO.isUsernameExists(username);
+            boolean emailExists = email != null && userService.isEmailExists(email);
+            boolean usernameExists = username != null && userService.isUsernameExists(username);
 
             if (emailExists) {
                 out.println("<span class='text-danger'>Email already exists!</span>");
@@ -47,7 +48,7 @@ public class UserCheckController extends HttpServlet {
             }
         } else if (manager != null) {
             // Kiểm tra vai trò của người quản lý (manager)
-            String role = userDAO.getRoleByUsername(manager);
+            String role = userService.getRoleByUsername(manager);
 
             if ("Teacher".equalsIgnoreCase(role)) {
                 out.println(""); // Không có lỗi, không cần thông báo

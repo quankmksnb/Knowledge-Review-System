@@ -33,17 +33,12 @@
             display: flex;
             flex-direction: column;
             padding: 0;
-            background-color: #f8f9fa;
-            background-image: url('Images/background.png');
-            background-size: cover;
-            background-position: center center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
         @media (min-width: 1200px) {
             body {
-                background-image: url('../Images/background.jpg');
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             }
         }
 

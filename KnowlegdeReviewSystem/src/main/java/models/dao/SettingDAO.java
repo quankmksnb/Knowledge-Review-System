@@ -206,6 +206,7 @@ public class SettingDAO implements DAO<Setting> {
         }
         return settingList;
     }
+
     public String getRoleById(int roleId) {
         String role = null;
         Connection connection = getConnection();
@@ -235,8 +236,5 @@ public class SettingDAO implements DAO<Setting> {
 
         return role;
     }
-    public static void main(String[] args) {
-        SettingDAO settingDAO = new SettingDAO();
-        System.out.println(settingDAO.findAllByType(SettingType.Semester));
-    }
+
 }

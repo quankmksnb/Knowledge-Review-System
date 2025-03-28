@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import models.User;
 import services.StringEncoder;
+import services.dataaccess.UserService;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -136,15 +137,16 @@ public class ProfileServlet extends HttpServlet {
 
             // Update user object
             user.setFullName(fullName.trim());
-            WebManager.getInstance().getUserDAO().update(user);
+            UserService userService = new UserService();
+            userService.update(user);
 
             // Here you would typically update the database
             // Example: userDAO.update(user);
 
             // Update session
             session.setAttribute("user", user);
-
             response.getWriter().write(new Gson().toJson(new SuccessResponse("Profile updated successfully")));
+
         } catch (Exception e) {
             LOGGER.severe("Error saving profile: " + e.getMessage());
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
@@ -197,7 +199,8 @@ public class ProfileServlet extends HttpServlet {
             // Update password
             String newPasswordHash = StringEncoder.encodePassword(newPassword);
             user.setPasswordHash(newPasswordHash);
-            WebManager.getInstance().getUserDAO().update(user);
+            UserService userService = new UserService();
+            userService.update(user);
 
             // Here you would typically update the database
             // Example: userDAO.update(user);

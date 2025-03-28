@@ -1,0 +1,218 @@
+body {
+    background-color: #f4f6f9;
+}
+
+.sidebar {
+    background-color: #1a1f36;
+    min-height: 100vh;
+}
+
+.sidebar .nav-link {
+    color: #8b92a8;
+    padding: 0.8rem 1rem;
+    margin: 0.2rem 0;
+    border-radius: 6px;
+}
+
+.sidebar .nav-link:hover {
+    background-color: #2d3548;
+    color: #fff;
+}
+
+.header-bar {
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+}
+
+.header-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.btn-primary,
+.btn-success,
+.btn-secondary {
+    border-radius: 8px;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+}
+
+.class-table {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+.class-table th,
+.class-table td {
+    text-align: center;
+    padding: 15px;
+    border: none;
+}
+
+.class-table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.class-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.class-table tr:hover {
+    background-color: #eef1f5;
+}
+
+/* Modal căn chỉnh */
+.modal-dialog {
+    max-width: 50vw;
+}
+
+.modal-content,
+.modal-body,
+.modal-header,
+.modal-dialog {
+    box-sizing: content-box !important;
+}
+
+
+.modal-content {
+    background-color: #2f3b52;
+    border-radius: 12px;
+    padding: 20px;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    border-style: none !important;
+}
+
+.modal-header {
+    background-color: #2f3b52;
+    color: white;
+    border-bottom: none;
+    padding: 15px;
+    border-radius: 12px 12px 0 0;
+}
+
+.modal-header .btn-close {
+    background-color: white;
+    border-radius: 100%;
+}
+
+.modal-body {
+    background-color: #2f3b52;
+    color: #ffffff;
+    border-radius: 10px;
+}
+
+/* Bảng trong modal */
+.modal-body table {
+    background-color: transparent;
+    color: white;
+    width: 100%;
+    border-radius: 8px;
+}
+
+.modal-body thead {
+    background-color: #324968;
+    color: #ffffff;
+    padding: 12px;
+    border-radius: 5px;
+}
+
+/* Căn chỉnh bảng */
+.modal-body td {
+    padding: 12px;
+    vertical-align: middle;
+    text-align: center;
+}
+
+/* Căn giữa các nút */
+.modal-body .d-flex {
+    justify-content: center;
+    gap: 10px;
+}
+
+.modal-body .btn-success,
+.modal-body .btn-danger {
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 6px;
+    transition: all 0.3s ease-in-out;
+}
+
+.modal-body .btn-success:hover {
+    background-color: #28a745;
+    transform: scale(1.05);
+}
+
+.modal-body .btn-danger:hover {
+    background-color: #dc3545;
+    transform: scale(1.05);
+}
+
+.popup {
+    background-color: #3e4a67;
+    color: white;
+    border: 1px solid #4d5b75;
+    border-radius: 8px;
+    padding: 0.8rem;
+}
+
+.popup:focus {
+    background-color: #4a5b72;
+    border-color: #007bff;
+    color: white;
+}
+
+.form-control[readonly] {
+    background-color: transparent !important; /* Xóa màu nền */
+}
+
+
+.student-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #ddd;
+    display: block;
+    margin: auto;
+}
+tbody, td, tfoot, th, thead, tr{
+    border-style: none;
+}
+
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1060;
+
+}
+
+
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1060;
+
+}
+
+.custom-toast .toast-header {
+    color: white;
+    background-color: green;
+}
+.custom-toast {
+    min-width: 250px;
+}

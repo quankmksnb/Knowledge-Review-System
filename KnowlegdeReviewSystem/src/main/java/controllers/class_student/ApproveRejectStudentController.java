@@ -9,12 +9,14 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import models.dao.ClassDAO;
+import services.dataaccess.ClassService;
 
 /**
  * @author Admin
  */
 @WebServlet(name = "ApproveRejectStudentController", urlPatterns = {"/approve_reject_student"})
 public class ApproveRejectStudentController extends HttpServlet {
+    private final ClassService classService = new ClassService();
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -47,15 +49,14 @@ public class ApproveRejectStudentController extends HttpServlet {
         int classId = Integer.parseInt(request.getParameter("classId"));
         String action = request.getParameter("action");
 
-        ClassDAO classDAO = new ClassDAO();
         boolean success = false;
         String message = "";
 
         if ("approve".equals(action)) {
-            success = classDAO.approveStudent(classId, studentId);
+            success = classService.approveStudent(classId, studentId);
             message = success ? "Student approved successfully!" : "Failed to approve student.";
         } else if ("reject".equals(action)) {
-            success = classDAO.rejectStudent(classId, studentId);
+            success = classService.rejectStudent(classId, studentId);
             message = success ? "Student removed successfully!" : "Failed to remove student.";
         }
 

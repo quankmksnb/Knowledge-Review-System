@@ -15,15 +15,7 @@
     <title>Quiz Update Management</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
-    <style>
-        body { background-color: #f4f6f9 !important; }
-        .header-bar { background-color: #fff !important; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .header-title { font-size: 24px; font-weight: bold; color: #333 !important; }
-        .form-control { background-color: #d9edf7 !important; border: none; border-radius: 8px; padding: 10px; }
-        .btn-save { background-color: #9370DB !important; color: white !important; border-radius: 8px; border: none; padding: 10px 15px;}
-        .btn-save:hover { background-color: #7B68EE !important; }
-        .warning-text { font-size: 14px; color: red; }
-    </style>
+    <link rel="stylesheet" href="CSS/Quiz/quizUpdate.css">
 </head>
 <body>
 <jsp:include page="../Web/header.jsp"></jsp:include>

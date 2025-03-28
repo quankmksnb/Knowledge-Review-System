@@ -23,12 +23,22 @@ import models.dao.SubjectDAO;
 import models.dao.UserDAO;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import services.dataaccess.ClassService;
+import services.dataaccess.SettingService;
+import services.dataaccess.SubjectService;
+import services.dataaccess.UserService;
 
 /**
  * @author Admin
  */
 @WebServlet(name = "ExportClassController", urlPatterns = {"/class_management/export"})
 public class ExportClassController extends HttpServlet {
+
+    private final ClassService classService = new ClassService();
+    private final SettingService settingService = new SettingService();
+    private final SubjectService subjectService = new SubjectService();
+    private final UserService userService = new UserService();
+
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -53,21 +63,17 @@ public class ExportClassController extends HttpServlet {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-Disposition", "attachment; filename=Class_Data.xlsx");
 
-        Workbook workbook = new XSSFWorkbook(); // Tạo workbook Excel mới
-        ClassDAO classDAO = new ClassDAO();
-        SettingDAO settingDAO = new SettingDAO();
-        SubjectDAO subjectDAO = new SubjectDAO();
-        UserDAO userDAO = new UserDAO();
+        Workbook workbook = new XSSFWorkbook(); // Tạo workbook Excel mới;
 
         // Lấy tất cả các học kỳ từ cơ sở dữ liệu
-        List<Setting> semesters = settingDAO.findAllBySemester();
+        List<Setting> semesters = settingService.findAllBySemester();
 
         // Lấy danh sách môn học, người quản lý, và domain
-        Map<Integer, String> subjectMap = subjectDAO.findAll().stream()
+        Map<Integer, String> subjectMap = subjectService.findAll().stream()
                 .collect(Collectors.toMap(Subject::getId, Subject::getCode));
-        Map<Integer, String> managerMap = userDAO.findAll().stream()
+        Map<Integer, String> managerMap = userService.findAll().stream()
                 .collect(Collectors.toMap(User::getId, User::getUsername));
-        Map<Integer, String> domainMap = settingDAO.findAllByType(SettingType.Category).stream()
+        Map<Integer, String> domainMap = settingService.findAllByType(SettingType.Category).stream()
                 .collect(Collectors.toMap(Setting::getId, Setting::getTitle));
 
         // Tạo một sheet cho từng học kỳ
@@ -76,7 +82,7 @@ public class ExportClassController extends HttpServlet {
             createSheetHeader(sheet);  // Tạo header cho sheet
 
             // Lọc các lớp học thuộc học kỳ hiện tại
-            List<models.Class> classes = classDAO.findBySemesterId(semester.getId());
+            List<models.Class> classes = classService.findBySemesterId(semester.getId());
 
             // Thêm danh sách lớp vào sheet tương ứng
             int rowNum = 1;
@@ -84,7 +90,7 @@ public class ExportClassController extends HttpServlet {
                 Row row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(cls.getCode());
                 row.createCell(1).setCellValue(cls.getClassName());
-                row.createCell(2).setCellValue(domainMap.getOrDefault(classDAO.getDomainIdBySubjectId(cls.getSubjectId()), "Unknown Domain"));
+                row.createCell(2).setCellValue(domainMap.getOrDefault(classService.getDomainIdBySubjectId(cls.getSubjectId()), "Unknown Domain"));
                 row.createCell(3).setCellValue(subjectMap.getOrDefault(cls.getSubjectId(), "Unknown Subject"));
                 row.createCell(4).setCellValue(managerMap.getOrDefault(cls.getManagerId(), "Unknown Manager"));
                 row.createCell(5).setCellValue(cls.getStatus().name());  // Trả về dạng text của Enum
@@ -96,6 +102,7 @@ public class ExportClassController extends HttpServlet {
         workbook.write(outputStream);  // Ghi file Excel vào luồng output
         workbook.close();  // Đóng workbook
         outputStream.close();  // Đóng output stream
+        request.getSession().setAttribute("message", "Dowload excel file successfully");
     }
 
     // Tạo header cho mỗi sheet

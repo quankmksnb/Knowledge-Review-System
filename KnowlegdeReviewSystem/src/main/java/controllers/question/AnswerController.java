@@ -1,4 +1,4 @@
-package controllers;
+package controllers.question;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -7,14 +7,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import models.AnswerOption;
-import models.Question;
-import models.dao.AnswerOptionDAO;
+import models.User;
+import services.dataaccess.AnswerOptionService;
 
 import java.io.IOException;
 import java.util.List;
 
 @WebServlet(name = "Answer", value = "/answer")
 public class AnswerController extends HttpServlet {
+    private AnswerOptionService answerOptionService = new AnswerOptionService();
+
+
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -22,7 +26,13 @@ public class AnswerController extends HttpServlet {
         if (action == null) {
             action = "view";
         }
+        HttpSession session = request.getSession();
 
+        User user = (User) session.getAttribute("user");
+
+        if (user == null || (user.getRoleId() != 1 && user.getRoleId() != 5)) {
+            request.getRequestDispatcher("WEB-INF/Web/error.jsp").forward(request, response);
+        }
         switch (action) {
             case "view":
                 viewAnswers(request, response);
@@ -47,32 +57,17 @@ public class AnswerController extends HttpServlet {
 
     private void viewAnswers(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        Question question = (Question) session.getAttribute("question");
-        request.setAttribute("question", question);
-//        if (question != null) {
-//            AnswerDAO answerDAO = new AnswerDAO();
-//            List<Answer> answers = answerDAO.findAnswersByQuestionId(question.getId());
-//
-//            request.setAttribute("question", question);
-//            request.setAttribute("answers", answers);
-//        }
-
-//        request.getRequestDispatcher("WEB-INF/QuestionManagement/questiondetail.jsp").forward(request, response);
     }
 
     private void addAnswer(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        AnswerOptionDAO answerDAO = new AnswerOptionDAO();
         HttpSession session = request.getSession();
-        List<AnswerOption> answers = (List<AnswerOption>) session.getAttribute("newAnswers"); // Lấy danh sách Answer từ session
-        for (AnswerOption answer : answers) {
-            System.out.println(answer);
-        }
+        List<AnswerOption> answers = (List<AnswerOption>) session.getAttribute("newAnswers");
+
         if (answers != null && !answers.isEmpty()) {
             try {
                 for (AnswerOption answer : answers) {
-                    answerDAO.create(answer);
+                    answerOptionService.create(answer);
                 }
                 session.removeAttribute("newAnswers");
                 session.setAttribute("successMessage", "Question created successfully!");
@@ -80,41 +75,39 @@ public class AnswerController extends HttpServlet {
                 request.setAttribute("errorMessage", "Error adding answers: " + e.getMessage());
             }
         }
-        response.sendRedirect("question");
+        response.sendRedirect("question?action=list");
     }
 
     private void updateAnswer(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        AnswerOptionDAO answerDAO = new AnswerOptionDAO();
         HttpSession session = request.getSession();
         List<AnswerOption> answers = (List<AnswerOption>) session.getAttribute("answers");
-        for (AnswerOption answer : answers) {
-            System.out.println(answer);
-        }
+        int questionId = Integer.parseInt(request.getParameter("questionId"));
+        answerOptionService.deleteByQuestionId(questionId);
+        System.out.println(answers.size());
         if (answers != null && !answers.isEmpty()) {
             try {
                 for (AnswerOption answer : answers) {
-                    answerDAO.update(answer);
+                    int affect = answerOptionService.create(answer);
+                    System.out.println(affect);
                 }
-                session.removeAttribute("newAnswers");
-                session.setAttribute("successMessage", "Question created successfully!");
+                session.removeAttribute("answers");
+                session.setAttribute("successMessage", "Question updated successfully!");
             } catch (Exception e) {
-                request.setAttribute("errorMessage", "Error adding answers: " + e.getMessage());
+                request.setAttribute("errorMessage", "Error updating answers: " + e.getMessage());
             }
         }
-        response.sendRedirect("question");
+        response.sendRedirect("question?action=list");
     }
 
     private void deleteAnswer(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        AnswerOptionDAO answerDAO = new AnswerOptionDAO();
-
         try {
             int id = Integer.parseInt(request.getParameter("id"));
-            AnswerOption answer = answerDAO.findById(id);
+            AnswerOption answer = answerOptionService.findById(id);
 
             if (answer != null) {
-                answerDAO.delete(answer);
+                answerOptionService.delete(answer);
                 request.setAttribute("successMessage", "Answer deleted successfully!");
             }
         } catch (Exception e) {
@@ -126,8 +119,6 @@ public class AnswerController extends HttpServlet {
 
     private void addMultipleAnswers(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        AnswerOptionDAO answerDAO = new AnswerOptionDAO();
-
         try {
             int questionId = Integer.parseInt(request.getParameter("questionId"));
             int count = Integer.parseInt(request.getParameter("count"));
@@ -138,7 +129,7 @@ public class AnswerController extends HttpServlet {
 
                 if (content != null && !content.trim().isEmpty()) {
                     AnswerOption answer = new AnswerOption(0, questionId, content, isCorrect);
-                    answerDAO.create(answer);
+                    answerOptionService.create(answer);
                 }
             }
 

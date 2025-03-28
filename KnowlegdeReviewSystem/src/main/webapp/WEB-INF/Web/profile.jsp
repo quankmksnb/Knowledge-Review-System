@@ -186,8 +186,6 @@
         </div>
       </div>
 
-      <!-- Change Password Section -->
-      <!-- Change Password Section -->
       <h4 class="mt-4">Change Password</h4>
       <form id="changePasswordForm">
         <div class="row">
@@ -247,12 +245,16 @@
       success: function(response) {
         $("#message").html('<div class="alert alert-success">Profile updated successfully!</div>');
         setTimeout(() => $("#message").html(''), 3000);
+        window.href.reload();
       },
       error: function(xhr, status, error) {
         $("#message").html('<div class="alert alert-danger">Error updating profile: ' + xhr.responseText + '</div>');
         setTimeout(() => $("#message").html(''), 3000);
+        window.href.reload();
       }
     });
+
+    window.href.reload();
   });
 
   // Current Password Verification

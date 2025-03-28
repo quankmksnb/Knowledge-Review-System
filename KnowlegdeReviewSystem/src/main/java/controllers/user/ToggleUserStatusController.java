@@ -10,23 +10,23 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import models.UserStatus;
 import models.dao.UserDAO;
+import services.dataaccess.UserService;
 
 /**
  * @author Admin
  */
 @WebServlet(name = "ToggleUserStatusController", urlPatterns = {"/user/toggleStatus"})
 public class ToggleUserStatusController extends HttpServlet {
-
+    private final UserService userService = new UserService();
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("application/json;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
-        UserDAO userDAO = new UserDAO();
 
         try (PrintWriter out = response.getWriter()) {
             int userId = Integer.parseInt(request.getParameter("userId"));
-            UserStatus newStatus = userDAO.toggleUserStatus(userId);
+            UserStatus newStatus = userService.toggleUserStatus(userId);
 
             // Kiểm tra trạng thái mới
             String statusClass;

@@ -16,7 +16,6 @@ public class LessonDAO extends DatabaseConnector implements DAO<Lesson> {
 
     @Override
     public int create(Lesson lesson) {
-
         return 0;
     }
 
@@ -46,7 +45,6 @@ public class LessonDAO extends DatabaseConnector implements DAO<Lesson> {
         }
         return false;
     }
-
 
     public boolean updateLesson(int lessonId, int userId, int subjectId, String lessonName, String description) {
         String sql = "UPDATE lesson SET title = ?, description = ?, modified_at = ?, modified_by = ? WHERE id = ?";
@@ -269,14 +267,6 @@ public class LessonDAO extends DatabaseConnector implements DAO<Lesson> {
         return title != null ? title : "Unknown";
     }
 
-    public static void main(String[] args) {
-        LessonDAO dao = new LessonDAO();
-        List<Lesson> lessons = dao.findAll();
-        for (Lesson lesson : lessons) {
-            System.out.println(lesson.toString());
-        }
-    }
-
     public List<Lesson> getLessonsByEnrolledSubjects(List<Integer> enrolledSubjectIds) {
         List<Lesson> lessons = new ArrayList<>();
 
@@ -352,10 +342,9 @@ public class LessonDAO extends DatabaseConnector implements DAO<Lesson> {
         return lessons;
     }
 
-
     public int getQuestionCountByLessonId(int lessonId) {
         int count = 0;
-        String sql = "SELECT COUNT(*) FROM question WHERE lesson_id = ?";
+        String sql = "SELECT COUNT(*) FROM question WHERE lesson_id = ? && status='active'";
 
         try (Connection connection = DatabaseConnector.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -500,15 +489,15 @@ public class LessonDAO extends DatabaseConnector implements DAO<Lesson> {
         return false;
     }
 
-
-    public boolean updateLessonWithChapter(int lessonId,  int subjectId, String lessonName, String description, int chapterId) {
+    public boolean updateLessonWithChapter(int lessonId,  int subjectId, String lessonName, String description, int chapterId, String videoUrl) {
         // Cập nhật thông tin bài học
-        String sqlUpdateLesson = "UPDATE lesson SET title = ?, description = ?, modified_at = ? WHERE id = ?";
+        String sqlUpdateLesson = "UPDATE lesson SET title = ?, description = ?, modified_at = ?, video_url = ? WHERE id = ?";
         try (PreparedStatement stmt = DatabaseConnector.getConnection().prepareStatement(sqlUpdateLesson)) {
             stmt.setString(1, lessonName);
             stmt.setString(2, description);
             stmt.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
-            stmt.setInt(4, lessonId);
+            stmt.setString(4, videoUrl);
+            stmt.setInt(5, lessonId);
             int updateCount = stmt.executeUpdate();
 
             // Nếu cập nhật bài học thành công, cập nhật chapter cho lesson
@@ -521,31 +510,30 @@ public class LessonDAO extends DatabaseConnector implements DAO<Lesson> {
         return false;
     }
 
-    public boolean addLesson1(String title, String description, String videoUrl, int subjectId, int chapterId) {
-        String sql = "INSERT INTO lesson (title, description, video_url, subject_id) VALUES (?, ?, ?, ?)";
+    public boolean addLesson1(String title, String description, String videoUrl, int subjectId, int chapterId, int createdBy) {
+        String sql = "INSERT INTO lesson (title, description, video_url, subject_id, created_by) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnector.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            // Thêm bài học vào bảng lesson
             stmt.setString(1, title);
             stmt.setString(2, description);
             stmt.setString(3, videoUrl);
             stmt.setInt(4, subjectId);
+            stmt.setInt(5, createdBy);
+
             int affectedRows = stmt.executeUpdate();
 
-            // Nếu bài học được thêm thành công, tiếp tục thêm vào bảng lesson_config
             if (affectedRows > 0) {
                 ResultSet generatedKeys = stmt.getGeneratedKeys();
                 if (generatedKeys.next()) {
-                    int lessonId = generatedKeys.getInt(1);  // Lấy ID của bài học vừa thêm
+                    int lessonId = generatedKeys.getInt(1);
 
-                    // Thêm vào bảng lesson_config
                     String lessonConfigSql = "INSERT INTO lesson_config (lesson_id, config_id) VALUES (?, ?)";
                     try (PreparedStatement stmtLessonConfig = conn.prepareStatement(lessonConfigSql)) {
-                        stmtLessonConfig.setInt(1, lessonId);  // Lưu ID bài học
-                        stmtLessonConfig.setInt(2, chapterId);  // Lưu ID chapter
-                        stmtLessonConfig.executeUpdate();  // Thực thi câu lệnh thêm vào lesson_config
+                        stmtLessonConfig.setInt(1, lessonId);
+                        stmtLessonConfig.setInt(2, chapterId);
+                        stmtLessonConfig.executeUpdate();
                     }
 
                     return true;
@@ -556,7 +544,5 @@ public class LessonDAO extends DatabaseConnector implements DAO<Lesson> {
         }
         return false;
     }
-
-
 
 }

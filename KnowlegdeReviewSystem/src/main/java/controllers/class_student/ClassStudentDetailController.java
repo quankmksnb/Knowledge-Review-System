@@ -23,6 +23,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import services.GenerateRandomPassword;
 import services.MailSender;
 import services.StringEncoder;
+import services.dataaccess.ClassService;
+import services.dataaccess.UserService;
 
 /**
  * @author Admin
@@ -30,17 +32,17 @@ import services.StringEncoder;
 @WebServlet(name = "ClassStudentDetailController", urlPatterns = {"/class_student_detail"})
 @MultipartConfig
 public class ClassStudentDetailController extends HttpServlet {
-
+    private final ClassService classService = new ClassService();
+    private final UserService userService = new UserService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         int classId = Integer.parseInt(request.getParameter("classId"));
 
-        ClassDAO classDAO = new ClassDAO();
-        Class clazz = classDAO.findById(classId);
-        List<User> approvedStudents = classDAO.getApprovedStudents(classId);
-        List<User> unapprovedStudents = classDAO.getUnapprovedStudents(classId);
+        Class clazz = classService.findById(classId);
+        List<User> approvedStudents = classService.getApprovedStudents(classId);
+        List<User> unapprovedStudents = classService.getUnapprovedStudents(classId);
 
         request.setAttribute("oldClassId", classId);
         request.setAttribute("clazz", clazz);
@@ -64,15 +66,13 @@ public class ClassStudentDetailController extends HttpServlet {
         }
 
         int classId = Integer.parseInt(classIdStr);
-        ClassDAO classDAO = new ClassDAO();
-        UserDAO userDAO = new UserDAO();
 
         if ("addStudent".equals(action)) {
             String emailInput = request.getParameter("email");
-            User student = userDAO.findByEmail(emailInput);
+            User student = userService.findByEmail(emailInput);
 
             if (student != null) {
-                boolean success = classDAO.addStudentToClass(classId, student.getId());
+                boolean success = classService.addStudentToClass(classId, student.getId());
                 session.setAttribute("message", success ? "Student added successfully!" : "Student is already in this class.");
             } else {
                 // Create new student
@@ -90,12 +90,12 @@ public class ClassStudentDetailController extends HttpServlet {
                 student.setCreatedAt(new Date(System.currentTimeMillis()));
                 student.setPasswordHash(StringEncoder.encodePassword(randomPassword));
 
-                userDAO.create(student);
+                userService.create(student);
 
-                User studentNew = userDAO.findByEmail(emailInput);
+                User studentNew = userService.findByEmail(emailInput);
 
                 // Add student to class
-                classDAO.addStudentToClass(classId, studentNew.getId());
+                classService.addStudentToClass(classId, studentNew.getId());
 
                 // Send email with random password
                 String subject = "[Knowledge Review System] Account Creation - Your Temporary Password";
@@ -139,9 +139,9 @@ public class ClassStudentDetailController extends HttpServlet {
 
                 int addedCount = 0;
                 for (String emailExcel : importedEmails) {
-                    User student = userDAO.findByEmail(emailExcel);
+                    User student = userService.findByEmail(emailExcel);
                     if (student != null) {
-                        boolean added = classDAO.addStudentToClass(classId, student.getId());
+                        boolean added = classService.addStudentToClass(classId, student.getId());
                         if (added) addedCount++;
                     }
                 }

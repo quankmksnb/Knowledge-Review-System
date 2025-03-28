@@ -1,4 +1,4 @@
-<%--
+<%@ page import="models.User" %><%--
   Created by IntelliJ IDEA.
   User: Admin
   Date: 2/25/2025
@@ -14,200 +14,91 @@
     <title>Class</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <!-- Bootstrap Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
           rel="stylesheet">
-
-    <style>
-        body {
-            background-color: #f4f6f9;
-        }
-
-        .sidebar {
-            background-color: #1a1f36;
-            min-height: 100vh;
-        }
-
-        .sidebar .nav-link {
-            color: #8b92a8;
-            padding: 0.8rem 1rem;
-            margin: 0.2rem 0;
-            border-radius: 6px;
-        }
-
-        .sidebar .nav-link:hover {
-            background-color: #2d3548;
-            color: #fff;
-        }
-
-        .header-bar {
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            padding: 15px;
-        }
-
-        .header-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .search-input {
-            background-color: #f8f9fa;
-            border: none;
-            padding-left: 2.5rem;
-            border-radius: 8px;
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #6c757d;
-        }
-
-        .class-table {
-            margin: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .class-table th, .class-table td {
-            text-align: center;
-            padding: 15px;
-            border: none;
-        }
-
-        .class-table th {
-            background-color: #f8f9fa;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .class-table tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        .class-table tr:hover {
-            background-color: #eef1f5;
-        }
-
-        .btn-primary {
-            border-radius: 8px;
-        }
-
-        .btn-success {
-            border-radius: 8px;
-        }
-
-        .modal-content {
-            background-color: #2f3b52; /* Màu nền tối */
-            border-radius: 12px; /* Cạnh bo tròn */
-            padding: 30px;
-        }
-
-        .modal-header {
-            background-color: #2f3b52; /* Màu nền header tối */
-            color: white;
-            border-bottom: none;
-        }
-
-        .modal-header .btn-close {
-            background-color: white;
-            border-radius: 100%;
-            color: white;
-        }
-
-        .modal-header .btn-close:hover {
-            color: #0056b3; /* Màu khi hover */
-        }
-
-        .modal-body {
-            background-color: #2f3b52;
-            color: #ffffff;
-        }
-
-
-        .popup {
-            background-color: #3e4a67; /* Nền các input */
-            color: white;
-            border: 1px solid #4d5b75; /* Viền nhẹ */
-            border-radius: 8px;
-            padding: 0.8rem;
-        }
-
-        .popup:focus {
-            background-color: #4a5b72; /* Nền khi focus */
-            border-color: #007bff;
-            color: white;
-        }
-
-        .btn-primary {
-            background-color: #007bff; /* Màu nút chính */
-            border-color: #007bff;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-            border-color: #004085;
-        }
-
-        .text-danger {
-            color: #ff4d4d;
-        }
-
-        input, select {
-            border-radius: 8px;
-        }
-
-        .small-dropdown {
-            width: 120px;
-            height: 30px;
-            font-size: 14px;
-            padding: 2px 8px;
-        }
-
-    </style>
+    <link href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="CSS/Class/classList.css">
 </head>
 <body>
 
 <div class="container-fluid">
+
     <%
         String message = (String) session.getAttribute("message");
         session.removeAttribute("message");
     %>
-    <%--    Dòng hiện thị thông báo--%>
-    <div id="toastMessage" class="toast align-items-center text-white bg-success border-0 position-fixed top-0 end-0"
-         role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-            <div class="toast-body text-center">
+    <div class="toast-container">
+        <div id="statusToast" class="toast custom-toast hide" role="alert" aria-live="assertive" aria-atomic="true"
+             data-bs-delay="2000">
+            <div class="toast-header">
+                <i class="bi me-2" id="toastIcon"></i>
+                <strong class="me-auto" id="toastTitle"></strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toastMessage">
                 <%= message != null ? message : "" %>
             </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
-                    aria-label="Close"></button>
         </div>
     </div>
 
     <div class="row">
+
+        <!-- Sidebar -->
+        <%
+            User user = (User) session.getAttribute("user");
+        %>
         <div class="col-auto px-0 sidebar d-none d-md-block">
             <div class="d-flex flex-column p-3">
                 <h5 class="text-white mb-4">AdminKit</h5>
                 <nav class="nav flex-column">
-                    <a class="nav-link" href="/home"><i class="bi bi-house"></i> Home</a>
+                    <!-- Home: Accessible to all roles -->
+                    <a class="nav-link" href="/admin"><i class="bi bi-house"></i> Home</a>
+
+                    <!-- User: Admin only -->
+                    <% if (user != null && user.getRoleId() == 1) { %>
                     <a class="nav-link" href="/user"><i class="bi bi-person-circle"></i> User</a>
+                    <% } %>
+
+                    <!-- Subject: Admin and Subject Manager -->
+                    <% if (user != null && (user.getRoleId() == 1 || user.getRoleId() == 5)) { %>
                     <a class="nav-link" href="/subject"><i class="bi bi-book"></i> Subject</a>
+                    <% } %>
+
+
+                    <!-- Class: Admin, Teacher, Training Manager, Subject Manager -->
+                    <% if (user != null && (user.getRoleId() == 2)) { %>
+                    <a class="nav-link" href="/class_teacher"><i class="bi bi-people"></i> Class</a>
+                    <% } %>
+
+                    <!-- Class: Admin, Training Manager, Subject Manager -->
+                    <% if (user != null && (user.getRoleId() == 1 || user.getRoleId() == 4 || user.getRoleId() == 5)) { %>
                     <a class="nav-link" href="/class_management"><i class="bi bi-people"></i> Class</a>
+                    <% } %>
+
+                    <!-- Setting: Admin only -->
+                    <% if (user != null && user.getRoleId() == 1) { %>
                     <a class="nav-link" href="/setting"><i class="bi bi-gear"></i> Setting</a>
-                    <a class="nav-link" href="question?action=choose"><i class="bi bi-question-octagon"></i>Question</a>
+                    <% } %>
+
+                    <!-- Question: Admin and Subject Manager -->
+                    <% if (user != null && (user.getRoleId() == 1 || user.getRoleId() == 5)) { %>
+                    <a class="nav-link" href="question?action=choose"><i class="bi bi-question-octagon"></i> Question</a>
+                    <% } %>
+
+                    <!-- Term: Admin and Subject Manager -->
+                    <% if (user != null && (user.getRoleId() == 1 || user.getRoleId() == 5)) { %>
+                    <a class="nav-link" href="term?action=choose"><i class="bi bi-journal-text"></i> Term</a>
+                    <% } %>
+
+                    <a class="nav-link" href="/logout"><i class="bi bi-arrow-return-left"></i> Logout</a>
                 </nav>
             </div>
         </div>
+
 
         <!-- Main Content -->
         <div class="col p-0">
@@ -316,7 +207,7 @@
                                             <input type="text" class="form-control popup" id="manager" name="manager"
                                                    required>
                                             <small id="managerError" class="text-danger ms-2"
-                                                  style="display:none;"></small>
+                                                   style="display:none;"></small>
                                         </div>
 
                                         <div class="col-md-6 mb-3">
@@ -405,9 +296,55 @@
                     </tbody>
                 </table>
             </div>
+
+            <div class="pagination">
+                <%
+                    // Lấy giá trị currentPage và totalPages từ request
+                    int currentPage = (int) request.getAttribute("currentPage");
+                    int totalPages = (int) request.getAttribute("totalPages");
+
+                    if (totalPages > 1) {
+                %>
+                <a href="?page=<%= Math.max(1, currentPage - 1) %>"
+                   class="pagination-item <%= currentPage == 1 ? "disabled" : "" %>">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+
+                <%
+                    int startPage = Math.max(1, currentPage - 2);
+                    int endPage = Math.min(totalPages, startPage + 4);
+
+                    if (startPage > 1) {
+                %>
+                <a href="?page=1" class="pagination-item">1</a>
+                <% if (startPage > 2) { %>
+                <span class="pagination-item disabled">...</span>
+                <% } %>
+                <% } %>
+
+                <% for (int i = startPage; i <= endPage; i++) { %>
+                <a href="?page=<%= i %>" class="pagination-item <%= i == currentPage ? "active" : "" %>"><%= i %>
+                </a>
+                <% } %>
+
+                <% if (endPage < totalPages) { %>
+                <% if (endPage < totalPages - 1) { %>
+                <span class="pagination-item disabled">...</span>
+                <% } %>
+                <a href="?page=<%= totalPages %>" class="pagination-item"><%= totalPages %>
+                </a>
+                <% } %>
+
+                <a href="?page=<%= Math.min(totalPages, currentPage + 1) %>"
+                   class="pagination-item <%= currentPage == totalPages ? "disabled" : "" %>">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                <% } %>
+            </div>
+
+
         </div>
     </div>
-</div>
 
 
 </body>
@@ -416,6 +353,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script>
     // hiện thị thông báo
     document.addEventListener("DOMContentLoaded", function () {
@@ -592,6 +530,23 @@
         });
     }
 
+    document.addEventListener("DOMContentLoaded", function () {
+        const toastEl = document.getElementById('statusToast');
+        const toastBody = document.getElementById('toastMessage');
+
+        if (toastBody && toastBody.innerText.trim() !== "") {
+            const toastIcon = document.getElementById('toastIcon');
+            const toastTitle = document.getElementById('toastTitle');
+
+            // Gán biểu tượng và tiêu đề động, nhưng nội dung là chính xác từ server
+            toastEl.classList.add('toast-success');
+            toastIcon.classList.add('bi-check-circle');
+            toastTitle.textContent = 'Success';
+
+            const bsToast = new bootstrap.Toast(toastEl);
+            bsToast.show();
+        }
+    });
 
 </script>
 </html>

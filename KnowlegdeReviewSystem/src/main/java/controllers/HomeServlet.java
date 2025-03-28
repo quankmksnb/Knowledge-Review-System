@@ -12,6 +12,8 @@ import jakarta.servlet.http.HttpSession;
 import models.*;
 import models.Class;
 import org.json.JSONObject;
+import services.dataaccess.ClassService;
+import services.dataaccess.SubjectService;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -32,7 +34,8 @@ import java.util.logging.Logger;
         "/enrollClass",
         "/popular-classes",
         "/classInfo",
-        "/my-class"})
+        "/my-class",
+        "/error"})
 public class HomeServlet extends HttpServlet {
 
     Logger LOGGER = Logger.getLogger(HomeServlet.class.getName());
@@ -59,7 +62,7 @@ public class HomeServlet extends HttpServlet {
                 break;
 
             case "/admin":
-                request.getRequestDispatcher("WEB-INF/Admin/homeAdmin.jsp").forward(request, response);
+                request.getRequestDispatcher("WEB-INF/Admin/dashboardAdmin.jsp").forward(request, response);
                 break;
             case "/public-classes":
                 request.getRequestDispatcher("WEB-INF/Web/publicClass.jsp").forward(request, response);
@@ -84,9 +87,15 @@ public class HomeServlet extends HttpServlet {
                 getPopularClasses(request, response);
                 break;
 
+            case "/error":
+                request.getRequestDispatcher("WEB-INF/Web/error.jsp").forward(request, response);
+                break;
+
             case "/my-class":
                 request.getRequestDispatcher("WEB-INF/Web/index.jsp").forward(request, response);
                 break;
+            default:
+                request.getRequestDispatcher("WEB-INF/Web/home.jsp").forward(request, response);
         }
     }
 
@@ -110,8 +119,10 @@ public class HomeServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
+        SubjectService subjectService = new SubjectService();
+
         // Mock subject data (replace with database call)
-        List<Subject> subjects = WebManager.getInstance().getSubjectDAO().findAll();
+        List<Subject> subjects = subjectService.findAll();
 
         // Convert to JSON
         String json = new Gson().toJson(subjects);
@@ -126,8 +137,9 @@ public class HomeServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
+        SubjectService subjectService = new SubjectService();
         String keyword = request.getParameter("query");
-        List<Subject> subjects = WebManager.getInstance().getSubjectDAO().searchSubjects(keyword, 5); // Limit to 5 results
+        List<Subject> subjects = subjectService.searchSubjects(keyword, 5); // Limit to 5 results
 
         Gson gson = new Gson();
         String json = gson.toJson(subjects);
@@ -138,8 +150,10 @@ public class HomeServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
+        ClassService classService = new ClassService();
+
         // Fetch class data from database
-        List<Class> classes = WebManager.getInstance().getClassDAO().findAllPublicClasses();
+        List<Class> classes = classService.findAllPublicClasses();
 
         // Convert to JSON
         String json = new Gson().toJson(classes);
@@ -154,8 +168,9 @@ public class HomeServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
+        ClassService classService = new ClassService();
         String keyword = request.getParameter("query");
-        List<Class> classes = WebManager.getInstance().getClassDAO().searchClasses(keyword, 5); // Limit to 5 results
+        List<Class> classes = classService.searchClasses(keyword, 5); // Limit to 5 results
 
         Gson gson = new Gson();
         String json = gson.toJson(classes);
@@ -173,12 +188,13 @@ public class HomeServlet extends HttpServlet {
 
         // Fetch class data from database
         List<Class> classes = new ArrayList<>();
+        ClassService classService = new ClassService();
 
         if(user == null){
-            classes = WebManager.getInstance().getClassDAO().findAllPublicClasses();
+            classes = classService.findAllPublicClasses();
         } else {
             LOGGER.warning(user.getId().toString());
-            classes = WebManager.getInstance().getClassDAO().findClassesByStudentId(user.getId());
+            classes = classService.findClassesByStudentId(user.getId());
         }
 
         // Convert to JSON
@@ -222,13 +238,17 @@ public class HomeServlet extends HttpServlet {
             jsonResponse.addProperty("enrollmentStatus", "Guest");
         }
 
-        Class _class = WebManager.getInstance().getClassDAO().findById(classId);
+
+        ClassService classService = new ClassService();
+
+        Class _class = classService.findById(classId);
         LOGGER.info(_class.getStatus().toString());
 
         jsonResponse.addProperty("className", _class.getClassName());
         jsonResponse.addProperty("code", _class.getCode());
         jsonResponse.addProperty("subjectName", _class.getSubjectName());
         jsonResponse.addProperty("managerName", _class.getManagerName());
+        jsonResponse.addProperty("description", _class.getDescription());
         jsonResponse.addProperty("status", _class.getStatus().toString());
 
         response.getWriter().write(gson.toJson(jsonResponse));
@@ -254,11 +274,14 @@ public class HomeServlet extends HttpServlet {
 
         User user = (User) session.getAttribute("user");
 
+
+        ClassService classService = new ClassService();
+
         try {
             int classId = Integer.parseInt(request.getParameter("id"));
 
             // Enroll the student into the class
-            WebManager.getInstance().getClassDAO().enrollStudent(user.getId(), classId);
+            classService.enrollStudent(user.getId(), classId);
             jsonResponse.put("success", "Enrollment successful");
             response.getWriter().write(jsonResponse.toString());
 
@@ -275,8 +298,10 @@ public class HomeServlet extends HttpServlet {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
 
-            // Mock data (replace with actual database query)
-            List<Class> classes = WebManager.getInstance().getClassDAO().findAllPublicClasses();
+        ClassService classService = new ClassService();
+
+        // Mock data (replace with actual database query)
+        List<Class> classes = classService.findAllPublicClasses();
 
         List<Class> popularClasses = new ArrayList<>();
         if (classes != null && !classes.isEmpty()) {

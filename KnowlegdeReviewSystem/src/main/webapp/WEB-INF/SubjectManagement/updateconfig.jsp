@@ -1,6 +1,7 @@
 <%@ page import="models.Config" %>
 <%@ page import="models.Setting" %>
-<%@ page import="java.util.List" %><%--
+<%@ page import="java.util.List" %>
+<%@ page import="models.User" %><%--
   Created by IntelliJ IDEA.
   User: PC
   Date: 3/19/2025
@@ -15,120 +16,22 @@
 <head>
     <title>Title</title>
 </head>
-<style>
-    body {
-        background-color: #f4f6f9;
-    }
+<link rel="stylesheet" href="CSS/SubjectDetail/formsubjectdetail.css">
 
-    .sidebar {
-        background-color: #1a1f36;
-        min-height: 100vh;
-    }
-
-    .sidebar .nav-link {
-        color: #8b92a8;
-        padding: 0.8rem 1rem;
-        margin: 0.2rem 0;
-        border-radius: 6px;
-    }
-
-    .sidebar .nav-link:hover {
-        background-color: #2d3548;
-        color: #fff;
-    }
-
-    .header-bar {
-        background-color: #fff;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        padding: 15px;
-        font-size: 24px;
-        font-weight: bold;
-        color: #333;
-        margin-bottom: 20px;
-    }
-
-    .form-container {
-        margin: 20px auto 40px;
-        background-color: #fff;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        max-width: 900px;
-    }
-
-    .form-control {
-        background-color: #d9edf7;
-        border: none;
-        border-radius: 8px;
-        padding: 10px;
-    }
-
-    .form-select {
-        background-color: #d9edf7;
-        border: none;
-        border-radius: 8px;
-        padding: 10px;
-    }
-
-    .btn-primary {
-        background-color: blue;
-        color: white;
-        border-radius: 8px;
-        padding: 10px 20px;
-        border: none;
-    }
-
-    .btn-primary:hover {
-        background-color: darkblue;
-    }
-
-    .row .col-md-6 {
-        margin-bottom: 25px;
-    }
-
-    .form-check-input {
-        margin-right: 10px;
-    }
-
-    .container-box {
-        margin-bottom: 20px;
-    }
-
-    .nav-tabs .nav-link.active {
-        font-weight: bold;
-    }
-</style>
 
 <body>
 <div class="container-fluid">
     <div class="row">
-        <!-- Sidebar -->
-        <div class="col-auto px-0 sidebar d-none d-md-block">
-            <div class="d-flex flex-column p-3">
-                <h5 class="text-white mb-4">AdminKit</h5>
-                <nav class="nav flex-column">
-                    <a class="nav-link" href="/home"><i class="bi bi-house me-2"></i> Home</a>
-                    <a class="nav-link" href="/user"><i class="bi bi-people me-2"></i> User</a>
-                    <a class="nav-link" href="/subject"><i class="bi bi-book me-2"></i> Subject</a>
-                    <a class="nav-link" href="/setting"><i class="bi bi-gear me-2"></i> Setting</a>
-                </nav>
-            </div>
-        </div>
+        <jsp:include page="../Admin/homeAdmin.jsp"></jsp:include>
         <%Config configUpdate = (Config) request.getAttribute("config");
             List<Setting> settingTypes = (List<Setting>) request.getAttribute("settingTypes");
         %>
-        <!-- Main Content -->
         <div class="col p-0">
-            <!-- Header -->
             <div class="header-bar d-flex justify-content-between align-items-center px-4 bg-white shadow-sm py-3">
                 <div class="header-title">Config Management</div>
             </div>
 
-                <!-- Subject Information Section -->
                 <div class="container">
-
-
-
                     <div class="form-container">
                         <form action="config" method="POST" id="updateConfigForm">
                             <input type="hidden" name="action" value="update">

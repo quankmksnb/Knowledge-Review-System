@@ -249,10 +249,10 @@
                 if(user.getRoleId() == 3) {
         %>
 
-        <a href="/my-class" class="my-class-link">My Class</a>
+            <a href="/my-class" class="my-class-link">My Class</a>
 
         <% }  else { %>
-        <a href="/class_teacher" class="my-class-link">My Class</a>
+            <a href="/class_teacher" class="my-class-link">My Class</a>
 
         <%} %>
 

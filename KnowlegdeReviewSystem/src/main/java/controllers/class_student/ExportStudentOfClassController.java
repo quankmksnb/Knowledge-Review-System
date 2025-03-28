@@ -15,21 +15,15 @@ import models.User;
 import models.dao.ClassDAO;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import services.dataaccess.ClassService;
 
 /**
  * @author Admin
  */
 @WebServlet(name = "ExportStudentOfClassController", urlPatterns = {"/exportStudents"})
 public class ExportStudentOfClassController extends HttpServlet {
+    private final ClassService classService = new ClassService();
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
-     *
-     * @param request  servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
-     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -54,9 +48,8 @@ public class ExportStudentOfClassController extends HttpServlet {
         int classId = Integer.parseInt(request.getParameter("classId"));
 
         // Lấy danh sách học sinh đã được phê duyệt từ ClassDAO
-        ClassDAO classDAO = new ClassDAO();
-        Class cls = classDAO.findById(classId);
-        List<User> approvedStudents = classDAO.getApprovedStudents(classId);
+        Class cls = classService.findById(classId);
+        List<User> approvedStudents = classService.getApprovedStudents(classId);
 
         // Thiết lập kiểu nội dung và tên file Excel
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");

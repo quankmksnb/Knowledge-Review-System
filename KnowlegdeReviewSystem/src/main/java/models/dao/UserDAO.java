@@ -18,11 +18,7 @@ import java.sql.*;
 public class UserDAO extends DatabaseConnector implements DAO<User> {
     Connection connection = getConnection();
 
-    //region DAO
-    //TODO: Implement logic for CRUD
-
     private static final Logger LOGGER = Logger.getLogger(UserDAO.class.getName());
-
 
     @Override
     public int create(User user) {
@@ -76,7 +72,6 @@ public class UserDAO extends DatabaseConnector implements DAO<User> {
         try {
             String sql = "UPDATE krsdb.user " +
                     "SET full_name = ?, " +
-                    "password_hash = ?, " +
                     "email = ?, " +
                     "role_id = ?, " +
                     "modified_at = NOW(), " +
@@ -85,11 +80,10 @@ public class UserDAO extends DatabaseConnector implements DAO<User> {
 
             ps = connection.prepareStatement(sql);
             ps.setString(1, user.getFullName());
-            ps.setString(2, user.getPasswordHash());
-            ps.setString(3, user.getEmail());
-            ps.setInt(4, user.getRoleId());
-            ps.setString(5, user.getAvatar());
-            ps.setInt(6, user.getId());
+            ps.setString(2, user.getEmail());
+            ps.setInt(3, user.getRoleId());
+            ps.setString(4, user.getAvatar());
+            ps.setInt(5, user.getId());
 
             ps.executeUpdate();
         } catch (SQLException ex) {
@@ -158,35 +152,6 @@ public class UserDAO extends DatabaseConnector implements DAO<User> {
 
         return user;
     }
-//
-//    @Override
-//    public void update(User user) {
-//        String sql = "UPDATE user SET full_name = ?, avatar = ?, username = ?, password_hash = ?, email = ?, role_id = ?, status = ?, modified_at = Now() WHERE id = ?";
-//
-//        try (Connection connection = DatabaseConnector.getConnection();
-//             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-//
-//            preparedStatement.setString(1, user.getFullName());
-//            preparedStatement.setString(2, user.getAvatar());
-//            preparedStatement.setString(3, user.getUsername());
-//            preparedStatement.setString(4, user.getPasswordHash());
-//            preparedStatement.setString(5, user.getEmail());
-//            preparedStatement.setInt(6, user.getRoleId());
-//            preparedStatement.setString(7, user.getStatus().toString());
-//            preparedStatement.setInt(8, user.getId());
-//
-//            int rowsUpdated = preparedStatement.executeUpdate();
-//
-//            if (rowsUpdated > 0) {
-//                LOGGER.info("User updated successfully! ID: " + user.getId());
-//            } else {
-//                LOGGER.warning("No user found with ID: " + user.getId());
-//            }
-//
-//        } catch (SQLException e) {
-//            LOGGER.warning("Error updating user: " + e.getMessage());
-//        }
-//    }
 
     public void updateStatus(User user){
         String sql = "UPDATE user SET status = ?, modified_at = Now() WHERE id = ?";

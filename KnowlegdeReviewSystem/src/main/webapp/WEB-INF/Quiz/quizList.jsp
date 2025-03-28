@@ -20,183 +20,10 @@
     <!-- Bootstrap Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
           rel="stylesheet">
-    <link href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" rel="stylesheet" />
-
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            color: #333;
-        }
-
-        .content-table {
-            margin-top: 10px;
-            margin-bottom: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .content-table th, .content-table td {
-            text-align: center;
-            padding: 15px;
-            border: none;
-        }
-
-        .content-table th {
-            background-color: #f8f9fa;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .content-table tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        .content-table tr:hover {
-            background-color: #eef1f5;
-        }
-
-        .btn-primary, .btn-success {
-            border-radius: 8px;
-        }
-
-        .search-input, .dropdown select {
-            padding: 5px;
-            height: 40px;
-            border-radius: 8px;
-        }
-
-        .dropdown-container {
-            background-color: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center; /* Vertically center */
-            justify-content: space-between; /* Distribute space evenly */
-            gap: 20px; /* Add space between elements */
-        }
-
-        .dropdown-container select,
-        .search-input {
-            width: 200px; /* Set fixed width for consistent alignment */
-        }
-
-        .table-responsive {
-            margin-top: 20px;
-        }
-
-        .table th, .table td {
-            vertical-align: middle;
-        }
-
-        .modal-content {
-            background-color: #2f3b52 !important; /* Dark background */
-            border-radius: 12px; /* Rounded corners */
-            padding: 30px;
-        }
-
-        .modal-header {
-            background-color: #2f3b52 !important; /* Dark header background */
-            color: white !important;
-            border-bottom: none !important;
-        }
-
-        .modal-header .btn-close {
-            background-color: white !important;
-            border-radius: 100%;
-            color: white !important;
-        }
-
-        .modal-header .btn-close:hover {
-            color: #0056b3 !important; /* Change color on hover */
-        }
-
-        .modal-body {
-            background-color: #2f3b52 !important;
-            color: #ffffff !important;
-        }
-
-        /* Input and select fields inside modal */
-        .popup {
-            background-color: #3e4a67 !important; /* Dark input background */
-            color: white !important;
-            border: 1px solid #4d5b75 !important; /* Subtle border */
-            border-radius: 8px;
-            padding: 0.8rem !important;
-        }
-
-        .popup:focus {
-            background-color: #4a5b72 !important; /* Darker background on focus */
-            border-color: #007bff !important;
-            color: white !important;
-        }
-
-        .btn-primary {
-            background-color: #007bff !important; /* Primary button color */
-            border-color: #007bff !important;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3 !important;
-            border-color: #004085 !important;
-        }
-
-        /* Small dropdowns inside the modal */
-        .small-dropdown {
-            width: 120px;
-            height: 30px;
-            font-size: 14px;
-            padding: 2px 8px;
-        }
-
-        input, select {
-            border-radius: 8px;
-        }
-
-        /* Pagination Styles */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            margin-top: 30px;
-            gap: 5px;
-        }
-
-        .pagination-item {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 35px;
-            height: 35px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-            background-color: white;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .pagination-item:hover {
-            background-color: #f1f1f1;
-        }
-
-        .pagination-item.active {
-            background-color: #0d6efd;
-            color: white;
-            border-color: #0d6efd;
-        }
-
-        .pagination-item.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-
-    </style>
+    <link href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="CSS/Quiz/quizList.css">
 </head>
+
 <body>
 <%
     String message = (String) session.getAttribute("message");
@@ -214,6 +41,7 @@
     </div>
 </div>
 <jsp:include page="../Web/header.jsp"></jsp:include>
+
 <div class="container">
     <!-- Table with dropdown and search -->
     <div class="table-container">
@@ -296,17 +124,20 @@
                             <c:choose>
                                 <c:when test="${quiz.status == 'Completed'}">
                                     <!-- Chỉ hiển thị Review Quiz khi status là Completed -->
-                                    <a href="quiz_result?quizId=${quiz.id}" class="btn btn-sm btn-success" title="Review Quiz">
+                                    <a href="quiz_result?quizId=${quiz.id}" class="btn btn-sm btn-success"
+                                       title="Review Quiz">
                                         <i class="bi bi-file-earmark-text-fill"></i> Review Quiz
                                     </a>
                                 </c:when>
                                 <c:otherwise>
                                     <!-- Hiển thị Start và Details khi status là Unfinished -->
-                                    <a href="take_quiz?quizId=${quiz.id}" class="btn btn-sm btn-primary" title="Start Quiz">
+                                    <a href="take_quiz?quizId=${quiz.id}" class="btn btn-sm btn-primary"
+                                       title="Start Quiz">
                                         <i class="bi bi-play-circle-fill"></i> Start
                                     </a>
 
-                                    <a href="quiz_detail?id=${quiz.id}" class="btn btn-sm btn-primary" title="Quiz Detail">
+                                    <a href="quiz_detail?id=${quiz.id}" class="btn btn-sm btn-primary"
+                                       title="Quiz Detail">
                                         <i class="bi bi-pencil-square"></i> Details
                                     </a>
 
@@ -345,14 +176,16 @@
             <% } %>
 
             <% for (int i = startPage; i <= endPage; i++) { %>
-            <a href="?page=<%= i %>" class="pagination-item <%= i == currentPage ? "active" : "" %>"><%= i %></a>
+            <a href="?page=<%= i %>" class="pagination-item <%= i == currentPage ? "active" : "" %>"><%= i %>
+            </a>
             <% } %>
 
             <% if (endPage < totalPages) { %>
             <% if (endPage < totalPages - 1) { %>
             <span class="pagination-item disabled">...</span>
             <% } %>
-            <a href="?page=<%= totalPages %>" class="pagination-item"><%= totalPages %></a>
+            <a href="?page=<%= totalPages %>" class="pagination-item"><%= totalPages %>
+            </a>
             <% } %>
 
             <a href="?page=<%= Math.min(totalPages, currentPage + 1) %>"
@@ -373,7 +206,8 @@
                 <div class="modal-header d-flex align-items-center justify-content-between">
                     <h3 class="modal-title" id="newQuizModalLabel">Create Quiz</h3>
                     <div class="d-flex align-items-center">
-                        <button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close ms-2" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
                     </div>
                 </div>
 
@@ -381,13 +215,15 @@
                     <div class="mb-3">
                         <label for="quizName" class="form-label">Quiz Name</label>
                         <input type="text" class="form-control popup" id="quizName" name="quizName" required>
-                        <small id="quizNameError" class="warning-text text-danger mt-2"></small> <!-- Error message for Quiz Name -->
+                        <small id="quizNameError" class="warning-text text-danger mt-2"></small>
+                        <!-- Error message for Quiz Name -->
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="subject" class="form-label">Subject</label>
-                            <select class="form-select popup" id="subject" name="subject" required onchange="updateLessonsBySubjectInModal()">
+                            <select class="form-select popup" id="subject" name="subject" required
+                                    onchange="updateLessonsBySubjectInModal()">
                                 <option value="">Select Subject</option>
                                 <c:forEach var="subject" items="${enrolledSubjects}">
                                     <option value="${subject.id}">${subject.subjectName}</option>
@@ -397,10 +233,12 @@
 
                         <div class="col-md-6 mb-3">
                             <label for="lesson" class="form-label">Lesson</label>
-                            <select class="form-select popup" id="lesson" name="lesson" required onchange="updateSubjectByLessonInModal() ; updateQuestionLimitInModal()">
+                            <select class="form-select popup" id="lesson" name="lesson" required
+                                    onchange="updateSubjectByLessonInModal() ; updateQuestionLimitInModal()">
                                 <option value="">Select Lesson</option>
                                 <c:forEach var="lesson" items="${lessons}">
-                                    <option value="${lesson.id}" data-subject="${lesson.subjectId}">${lesson.title}</option>
+                                    <option value="${lesson.id}"
+                                            data-subject="${lesson.subjectId}">${lesson.title}</option>
                                 </c:forEach>
                             </select>
                         </div>
@@ -408,20 +246,21 @@
 
                     <div class="mb-3">
                         <label class="form-label">Number of Questions</label>
-                        <input type="number" name="numOfQuestions" id="numOfQuestions" value="${quiz.numOfQuestions}" class="form-control popup" required>
+                        <input type="number" name="numOfQuestions" id="numOfQuestions" value="${quiz.numOfQuestions}"
+                               class="form-control popup" required>
                         <small id="maxQuestionsWarning" class="warning-text text-info mt-2"></small>
                     </div>
 
-                    <button type="submit" class="btn btn-primary w-100 py-2 rounded-3 shadow-sm mt-3">Create Quiz</button>
+                    <button type="submit" class="btn btn-primary w-100 py-2 rounded-3 shadow-sm mt-3">Create Quiz
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
-
-
-
+<footer class="site-footer">
+    <jsp:include page="../Web/footer.jsp"></jsp:include>
+</footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
@@ -438,10 +277,10 @@
             $.ajax({
                 url: "/getLessonsBySubject", // Gọi servlet lấy Lesson
                 type: "GET",
-                data: { subjectId: subjectId },
-                success: function(data) {
+                data: {subjectId: subjectId},
+                success: function (data) {
                     // Thêm các bài học vào dropdown
-                    data.forEach(function(lesson) {
+                    data.forEach(function (lesson) {
                         var option = document.createElement("option");
                         option.value = lesson.id;
                         option.textContent = lesson.title;
@@ -455,7 +294,7 @@
                         lessonDropdown.value = selectedLesson;
                     }
                 },
-                error: function(xhr) {
+                error: function (xhr) {
                     console.error("Error fetching lessons:", xhr);
                 }
             });
@@ -471,7 +310,7 @@
         if (lessonId !== "") {
             // Lấy thông tin về bài học đã chọn
             var lessonOptions = document.getElementById("lessonFilter").options;
-            var selectedLessonOption = Array.from(lessonOptions).find(function(option) {
+            var selectedLessonOption = Array.from(lessonOptions).find(function (option) {
                 return option.value == lessonId;
             });
 
@@ -489,7 +328,6 @@
     }
 
 
-
     function updateLessonsBySubjectInModal() {
         var subjectId = document.getElementById("subject").value;
         var lessonDropdown = document.getElementById("lesson");
@@ -502,10 +340,10 @@
             $.ajax({
                 url: "/getLessonsBySubject", // Gọi servlet lấy Lesson
                 type: "GET",
-                data: { subjectId: subjectId },
-                success: function(data) {
+                data: {subjectId: subjectId},
+                success: function (data) {
                     // Thêm các bài học vào dropdown
-                    data.forEach(function(lesson) {
+                    data.forEach(function (lesson) {
                         var option = document.createElement("option");
                         option.value = lesson.id;
                         option.textContent = lesson.title;
@@ -522,7 +360,7 @@
                     // Kiểm tra lại số câu hỏi khi lesson thay đổi
                     updateQuestionLimit();
                 },
-                error: function(xhr) {
+                error: function (xhr) {
                     console.error("Error fetching lessons:", xhr);
                 }
             });
@@ -538,7 +376,7 @@
         if (lessonId !== "") {
             // Lấy thông tin về bài học đã chọn
             var lessonOptions = document.getElementById("lesson").options;
-            var selectedLessonOption = Array.from(lessonOptions).find(function(option) {
+            var selectedLessonOption = Array.from(lessonOptions).find(function (option) {
                 return option.value == lessonId;
             });
 
@@ -563,14 +401,14 @@
                 url: "/getQuestionsCountByLesson",
                 type: "GET",
                 data: {lessonId: lessonId},
-                success: function(response) {
+                success: function (response) {
                     if (response && response.maxQuestions !== undefined) {
                         var maxQuestions = response.maxQuestions;
                         document.getElementById("numOfQuestions").max = maxQuestions;
                         document.getElementById("maxQuestionsWarning").textContent = "Max questions: " + maxQuestions;
                     }
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     console.error("Error fetching question count:", error);
                 }
             });
@@ -578,7 +416,7 @@
     }
 
 
-    document.getElementById("quizForm").addEventListener("submit", function(event) {
+    document.getElementById("quizForm").addEventListener("submit", function (event) {
         let numOfQuestions = document.getElementById("numOfQuestions").value;
         let maxQuestions = document.getElementById("numOfQuestions").max;
         let quizName = document.getElementById("quizName").value;  // Get the quiz name value
@@ -614,7 +452,6 @@
     });
 
 
-
     function filterTable() {
         var subjectId = document.getElementById("subjectFilter").value;
         var lessonId = document.getElementById("lessonFilter").value;
@@ -631,12 +468,12 @@
                 status: status,
                 quizName: quizName
             },
-            success: function(response) {
+            success: function (response) {
                 // Xử lý dữ liệu HTML trả về và cập nhật phần tbody của bảng
                 var quizContent = document.getElementById("quizContent");
                 quizContent.innerHTML = response;  // Cập nhật nội dung bảng trong tbody
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.error("Error fetching filtered quizzes:", error);
             }
         });

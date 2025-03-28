@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @WebServlet("/quiz_result")
 public class QuizResultServlet extends HttpServlet {
     private QuizDAO quizDAO;
-    private dao.QuizQuestionDAO quizQuestionDAO;
+    private models.dao.QuizQuestionDAO quizQuestionDAO;
     private QuestionDAO questionDAO;
     private QuizResultDAO quizResultDAO;
     private QuizAnswerDAO quizAnswerDAO;
@@ -26,7 +26,7 @@ public class QuizResultServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         quizDAO = new QuizDAO();
-        quizQuestionDAO = new dao.QuizQuestionDAO();
+        quizQuestionDAO = new models.dao.QuizQuestionDAO();
         questionDAO = new QuestionDAO();
         quizResultDAO = new QuizResultDAO();
         quizAnswerDAO = new QuizAnswerDAO();
@@ -122,7 +122,7 @@ public class QuizResultServlet extends HttpServlet {
         request.setAttribute("quizResult", quizResult);
         request.setAttribute("totalQuestion", questionMap.size());
         request.setAttribute("correctAnswer", correctAnswer);
-        request.setAttribute("wrongAnswer", quizAnswers.size() - correctAnswer);
+        request.setAttribute("wrongAnswer", questionMap.size() - correctAnswer);
 //        request.setAttribute("questionReviews", questionReviews);
 
         // Forward to the result page

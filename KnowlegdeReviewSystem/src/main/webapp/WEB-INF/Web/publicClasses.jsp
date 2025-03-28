@@ -20,11 +20,7 @@
             margin: 0;
             padding: 0;
             background-color: #f8f9fa;
-            background-image: url('../Images/background.jpg'); /* Path to your HD image */
-            background-size: cover; /* Ensures the image covers the entire background */
-            background-position: center center; /* Centers the image */
-            background-attachment: fixed; /* Keeps the background fixed when scrolling */
-            background-repeat: no-repeat; /* Prevents the image from repeating */
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
         @media (min-width: 1200px) {

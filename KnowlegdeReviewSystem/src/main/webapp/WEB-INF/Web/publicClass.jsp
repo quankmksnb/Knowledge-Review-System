@@ -34,12 +34,7 @@
             display: flex;
             flex-direction: column;
             padding: 0;
-            background-color: #f8f9fa;
-            background-image: url('/Images/background.jpg');
-            background-size: cover;
-            background-position: center center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
         /* Filter Dropdown */
@@ -303,7 +298,7 @@
         <p><strong>Class Code:</strong> <span id="class-code"></span></p>
         <p><strong>Subject:</strong> <span id="subject"></span></p>
         <p><strong>Instructor:</strong> <span id="instructor-name"></span></p>
-        <p><strong>Class Status:</strong> <span id="class-status"></span></p>
+        <p><strong>Description:</strong> <span id="description"></span></p>
         <div class="enroll-section">
             <button class="enroll-btn" onclick="enroll(modalClassId)">Enroll Now</button>
         </div>
@@ -411,7 +406,7 @@
                     $('#class-name').text(data.className);
                     $('#class-code').text(data.code);
                     $('#instructor-name').text(data.managerName);
-                    $('#class-status').text(data.status);
+                    $('#description').text(data.description);
                     $('#subject').text(data.subjectName);
                     modalClassId = classId;
 

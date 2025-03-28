@@ -16,6 +16,8 @@ import models.ClassStatus;
 import models.User;
 import models.dao.ClassDAO;
 import models.dao.SubjectDAO;
+import services.dataaccess.ClassService;
+import services.dataaccess.SubjectService;
 
 /**
  *
@@ -23,6 +25,8 @@ import models.dao.SubjectDAO;
  */
 @WebServlet(name="ClassSemesterFilterController", urlPatterns={"/filter_class_by_semester"})
 public class ClassSemesterFilterController  extends HttpServlet {
+    private final ClassService classService = new ClassService();
+    private final SubjectService subjectService = new SubjectService();
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
@@ -40,18 +44,16 @@ public class ClassSemesterFilterController  extends HttpServlet {
         String semesterIdStr = request.getParameter("semesterId");
         Integer semesterId = (semesterIdStr != null && !semesterIdStr.isEmpty()) ? Integer.parseInt(semesterIdStr) : null;
 
-        ClassDAO classDAO = new ClassDAO();
-        SubjectDAO subjectDAO = new SubjectDAO();
 
         // Lọc danh sách lớp theo học kỳ
-        List<models.Class> filteredClasses = classDAO.findByManagerId(user.getId(), semesterId);
+        List<models.Class> filteredClasses = classService.findByManagerId(user.getId(), semesterId);
 
         Map<Integer, String> subjectCodeMap = new HashMap<>();
         Map<Integer, String> subjectNameMap = new HashMap<>();
 
         for (models.Class cls : filteredClasses) {
-            String subjectCode = subjectDAO.getSubjectCodeById(cls.getSubjectId());
-            String subjectName = subjectDAO.getSubjectNameById(cls.getSubjectId());
+            String subjectCode = subjectService.getSubjectCodeById(cls.getSubjectId());
+            String subjectName = subjectService.getSubjectNameById(cls.getSubjectId());
 
             subjectCodeMap.put(cls.getId(), subjectCode);
             subjectNameMap.put(cls.getId(), subjectName);

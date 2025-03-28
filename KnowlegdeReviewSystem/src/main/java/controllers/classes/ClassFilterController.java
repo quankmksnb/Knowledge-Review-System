@@ -17,21 +17,22 @@ import models.dao.ClassDAO;
 import models.dao.SettingDAO;
 import models.dao.SubjectDAO;
 import models.dao.UserDAO;
+import services.dataaccess.ClassService;
+import services.dataaccess.SettingService;
+import services.dataaccess.SubjectService;
+import services.dataaccess.UserService;
 
 /**
  * @author Admin
  */
 @WebServlet(name = "ClassFilterController", urlPatterns = {"/class_management/search"})
 public class ClassFilterController extends HttpServlet {
+    private final ClassService classService = new ClassService();
+    private final SubjectService subjectService = new SubjectService();
+    private final UserService userService = new UserService();
+    private final SettingService settingService = new SettingService();
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
-     *
-     * @param request  servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
-     */
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -48,13 +49,8 @@ public class ClassFilterController extends HttpServlet {
         Integer domainId = (domainFilter != null && !domainFilter.isEmpty()) ? Integer.parseInt(domainFilter) : null;
         String status = (statusFilter != null && !statusFilter.isEmpty()) ? statusFilter : null;
 
-        ClassDAO classDAO = new ClassDAO();
-        SubjectDAO subjectDAO = new SubjectDAO();
-        UserDAO userDAO = new UserDAO();
-        SettingDAO settingDAO = new SettingDAO();
-
         // Lọc danh sách lớp học theo các tiêu chí
-        List<Class> classList = classDAO.searchClasses(searchQuery, semesterId, domainId, status);
+        List<Class> classList = classService.searchClasses(searchQuery, semesterId, domainId, status);
 
         // Ánh xạ SubjectCode, Domain và Manager Name
         Map<Integer, String> subjectCodeMap = new HashMap<>();
@@ -64,19 +60,19 @@ public class ClassFilterController extends HttpServlet {
         for (Class cls : classList) {
             // Subject Code Mapping
             if (!subjectCodeMap.containsKey(cls.getSubjectId())) {
-                String subjectCode = subjectDAO.getSubjectCodeById(cls.getSubjectId());
+                String subjectCode = subjectService.getSubjectCodeById(cls.getSubjectId());
                 subjectCodeMap.put(cls.getSubjectId(), subjectCode);
             }
 
             // Domain Mapping
             if (!domainMap.containsKey(cls.getSubjectId())) {
-                String domain = subjectDAO.getDomain(cls.getSubjectId());
+                String domain = subjectService.getDomain(cls.getSubjectId());
                 domainMap.put(cls.getSubjectId(), domain);
             }
 
             // Manager Username Mapping
             if (!managerUsernameMap.containsKey(cls.getManagerId())) {
-                String managerUsername = userDAO.getManagerUsername(cls.getManagerId());
+                String managerUsername = userService.getManagerUsername(cls.getManagerId());
                 managerUsernameMap.put(cls.getManagerId(), managerUsername);
             }
         }
